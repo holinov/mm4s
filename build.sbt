@@ -12,6 +12,7 @@ resolvers += "jw3 at bintray" at "https://dl.bintray.com/jw3/maven"
 
 libraryDependencies ++= {
   val akkaVersion = "2.4.2"
+  val scalaTest = "3.0.0-M15"
 
   Seq(
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -24,7 +25,8 @@ libraryDependencies ++= {
     "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion % Runtime,
 
-    "org.scalatest" %% "scalatest" % "2.2.5" % Test,
+    "org.scalactic" %% "scalactic" % scalaTest % Test,
+    "org.scalatest" %% "scalatest" % scalaTest % Test,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test
   )
 }

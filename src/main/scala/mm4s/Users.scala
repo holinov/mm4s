@@ -11,6 +11,7 @@ import spray.json._
 
 /**
  * User related API components
+ *
  * @see [[https://github.com/mattermost/platform/blob/master/api/user.go]]
  */
 object Users {
@@ -35,7 +36,7 @@ object Users {
 object UserModels {
   case class CreateUser(username: String, password: String, email: String, team_id: String)
   case class UserCreated(id: String, username: String, email: String, team_id: String)
-  case class LoginByEmail(email: String, password: String, team: String)
+  case class LoginByEmail(email: String, password: String, name: String /*team name*/)
 }
 
 object UserProtocols extends DefaultJsonProtocol with SprayJsonSupport {

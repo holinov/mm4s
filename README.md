@@ -1,6 +1,7 @@
 Mattermost for Scala (mm4s)
 ==========================
 [![Build Status](https://travis-ci.org/jw3/mm4s.svg?branch=master)](https://travis-ci.org/jw3/mm4s)
+[![Dependencies](https://app.updateimpact.com/badge/701268856357916672/mm4s.svg?config=compile)](https://app.updateimpact.com/latest/701268856357916672/mm4s)
 
 [WIP] Mattermost API implemented using Akka HTTP and Streams
 

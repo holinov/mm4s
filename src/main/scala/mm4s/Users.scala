@@ -3,7 +3,7 @@ package mm4s
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling._
-import akka.http.scaladsl.model.{HttpResponse, MessageEntity}
+import akka.http.scaladsl.model.{HttpMethods, HttpResponse, MessageEntity}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Flow
 import spray.json._
@@ -20,14 +20,14 @@ object Users {
   import UserProtocols._
 
   def create(createUser: CreateUser)(implicit system: ActorSystem) = {
-    request("/users/create") {
-      Marshal(createUser).to[MessageEntity]
+    request("/users/create") { r =>
+      Marshal(createUser).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
     }
   }
 
   def login(byEmail: LoginByEmail)(implicit system: ActorSystem) = {
-    request("/users/login") {
-      Marshal(byEmail).to[MessageEntity]
+    request("/users/login") { r =>
+      Marshal(byEmail).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
     }
   }
 }

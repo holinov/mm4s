@@ -3,8 +3,11 @@ package mm4s
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import akka.http.scaladsl.model._
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
+
+import scala.concurrent.Future
 
 /**
  *
@@ -15,9 +18,15 @@ object Teams {
   import TeamProtocols._
 
   def create(team: CreateTeam)(implicit system: ActorSystem) = {
-    request("/teams/create") {
-      Marshal(team).to[MessageEntity]
+    request("/teams/create") { r =>
+      Marshal(team).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
     }
+  }
+
+  def list(token: String)(implicit system: ActorSystem) = {
+    // todo;; temporary hanlding of headers
+    val h: Ok = HttpHeader.parse("Cookie", token).asInstanceOf[Ok]
+    get("/teams/all").map(r => r.withHeaders(h.header))
   }
 }
 

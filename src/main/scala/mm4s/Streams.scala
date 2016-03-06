@@ -1,8 +1,9 @@
 package mm4s
 
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, MessageEntity}
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Source}
@@ -13,14 +14,20 @@ import scala.concurrent.Future
  * Various reusable stream components
  */
 object Streams {
+  type RequestBuilder = HttpRequest => Future[HttpRequest]
 
   /**
-   * Create a HttpRequest as a Source
+   * Create a GET HttpRequest as a Source
    */
-  def request(path: String)(fe: => Future[MessageEntity])(implicit system: ActorSystem) = {
-    Source.fromFuture(fe).map(e =>
-      HttpRequest(uri = s"$mmapi$path", entity = e, method = HttpMethods.POST)
-    )
+  def get(path: String)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
+    request(path)(Future.successful)
+  }
+
+  /**
+   * Create a HttpRequest as a Source with access to modify its construction
+   */
+  def request(path: String)(builder: RequestBuilder)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
+    Source.fromFuture(builder(HttpRequest(uri = s"$mmapi$path")))
   }
 
   /**

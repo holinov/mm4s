@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink}
 import mm4s.Streams._
-import mm4s.UserModels.{CreateUser, LoginByEmail, UserCreated}
+import mm4s.UserModels.{LoginByUsername, CreateUser, UserCreated}
 import mm4s.{UserProtocols, Users}
 
 import scala.concurrent.Await
@@ -30,7 +30,7 @@ object CreateUserExample extends App {
   // transition from creating user to logging user in
   // todo;; extract the Token from the response headers
   val toLogin = Flow[UserCreated]
-                .map(c => LoginByEmail(c.email, pass, "xxxx" /* todo;; requires the team-name not the id */))
+                .map(c => LoginByUsername(c.username, pass, "xxxx" /* todo;; requires the team-name not the id */))
                 .mapAsync(1)(l => Users.login(l).via(conn).runWith(Sink.head))
 
   Users.create(userdata)

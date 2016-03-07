@@ -2,15 +2,12 @@ package examples
 
 import java.util.UUID
 
-import akka.actor.Actor.Receive
-import akka.actor.{Props, ActorLogging, Actor, ActorSystem}
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.model.headers.`Set-Cookie`
+import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Flow}
+import akka.stream.scaladsl.Sink
 import mm4s.MessageModels.CreatePost
 import mm4s.Streams._
-import mm4s.UserModels.{LoggedIn, LoginByEmail}
+import mm4s.UserModels.{LoggedIn, LoginByUsername}
 import mm4s.{Messages, Users}
 
 import scala.concurrent.Await
@@ -27,9 +24,9 @@ object LoginExample extends App {
   implicit val materializer = ActorMaterializer()
 
   val conn = connection("localhost")
-  val logindata = LoginByEmail("root@mm.com", "password", "mmteam")
+  val logindata = LoginByUsername("root", "password", "mmteam")
 
-  val bot = Bot()
+  val bot = Bot("komb3qpj1pn4zytpkgrypsnwda")
 
   Users.login(logindata)
   .via(conn)
@@ -44,19 +41,19 @@ object LoginExample extends App {
 case class Done()
 
 object Bot {
-  def apply()(implicit system: ActorSystem, mat: ActorMaterializer) = {
-    system.actorOf(Props(new Bot()))
+  def apply(channel: String)(implicit system: ActorSystem, mat: ActorMaterializer) = {
+    system.actorOf(Props(new Bot(channel)))
   }
 }
 
-class Bot()(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
+class Bot(channel: String)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
   import context.system
   val conn = connection("localhost")
 
   def receive: Receive = {
     case m: LoggedIn =>
       log.debug(s"Bot ${m.details.username} Logged In, $m")
-      Messages.create(CreatePost("I just logged in!", "komb3qpj1pn4zytpkgrypsnwda"), m.token)
+      Messages.create(CreatePost("I just logged in!", channel), m.token)
       .via(conn).runForeach(println)
   }
 }

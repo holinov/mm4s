@@ -27,9 +27,9 @@ object Users {
     }
   }
 
-  def login(byEmail: LoginByEmail)(implicit system: ActorSystem) = {
+  def login(byUsername: LoginByUsername)(implicit system: ActorSystem) = {
     request("/users/login") { r =>
-      Marshal(byEmail).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
+      Marshal(byUsername).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
     }
   }
 
@@ -45,7 +45,7 @@ object Users {
 object UserModels {
   case class CreateUser(username: String, password: String, email: String, team_id: String)
   case class UserCreated(id: String, username: String, email: String, team_id: String)
-  case class LoginByEmail(email: String, password: String, name: String /*team name*/)
+  case class LoginByUsername(username: String, password: String, name: String /*team name*/)
   case class LoginDetails(id: String, team_id: String, username: String, email: String)
   case class LoggedIn(token: String, details: LoginDetails)
 }
@@ -55,7 +55,7 @@ object UserProtocols extends DefaultJsonProtocol with SprayJsonSupport {
 
   implicit val CreateUserFormat: RootJsonFormat[CreateUser] = jsonFormat4(CreateUser)
   implicit val UserCreatedFormat: RootJsonFormat[UserCreated] = jsonFormat4(UserCreated)
-  implicit val LoginByEmailFormat: RootJsonFormat[LoginByEmail] = jsonFormat3(LoginByEmail)
+  implicit val LoginByUsernameFormat: RootJsonFormat[LoginByUsername] = jsonFormat3(LoginByUsername)
   implicit val LoginDetailsFormat: RootJsonFormat[LoginDetails] = jsonFormat4(LoginDetails)
   implicit val LoggedInFormat: RootJsonFormat[LoggedIn] = jsonFormat2(LoggedIn)
 }

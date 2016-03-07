@@ -3,8 +3,8 @@ package mm4s
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling._
+import akka.http.scaladsl.model.headers.`Set-Cookie`
 import akka.http.scaladsl.model.{HttpMethods, HttpResponse, MessageEntity}
-import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Flow
 import spray.json._
 
@@ -30,6 +30,8 @@ object Users {
       Marshal(byEmail).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
     }
   }
+
+  val extractToken = Flow[HttpResponse].map(_.headers.collect { case `Set-Cookie`(x) ⇒ x })
 }
 
 

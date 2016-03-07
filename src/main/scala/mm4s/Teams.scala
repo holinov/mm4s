@@ -3,11 +3,9 @@ package mm4s
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.Cookie
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
-
-import scala.concurrent.Future
 
 /**
  *
@@ -24,9 +22,7 @@ object Teams {
   }
 
   def list(token: String)(implicit system: ActorSystem) = {
-    // todo;; temporary hanlding of headers
-    val h: Ok = HttpHeader.parse("Cookie", token).asInstanceOf[Ok]
-    get("/teams/all").map(r => r.withHeaders(h.header))
+    get("/teams/all").map(r => r.withHeaders(Cookie("MMTOKEN", token)))
   }
 }
 

@@ -5,6 +5,8 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling._
 import akka.http.scaladsl.model.headers.`Set-Cookie`
 import akka.http.scaladsl.model.{HttpMethods, HttpResponse, MessageEntity}
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
 import spray.json._
 
@@ -31,7 +33,12 @@ object Users {
     }
   }
 
-  val extractToken = Flow[HttpResponse].map(_.headers.collect { case `Set-Cookie`(x) ⇒ x })
+  def extractSession()(implicit system: ActorSystem, mat: ActorMaterializer) = {
+    Flow[HttpResponse].mapAsync(1) { r =>
+      val cookie = r.headers.collect { case `Set-Cookie`(x) ⇒ x }.head.value
+      Unmarshal(r).to[LoginDetails].map(d => LoggedIn(cookie, d))
+    }
+  }
 }
 
 
@@ -39,6 +46,8 @@ object UserModels {
   case class CreateUser(username: String, password: String, email: String, team_id: String)
   case class UserCreated(id: String, username: String, email: String, team_id: String)
   case class LoginByEmail(email: String, password: String, name: String /*team name*/)
+  case class LoginDetails(id: String, team_id: String, username: String, email: String)
+  case class LoggedIn(token: String, details: LoginDetails)
 }
 
 object UserProtocols extends DefaultJsonProtocol with SprayJsonSupport {
@@ -47,4 +56,6 @@ object UserProtocols extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val CreateUserFormat: RootJsonFormat[CreateUser] = jsonFormat4(CreateUser)
   implicit val UserCreatedFormat: RootJsonFormat[UserCreated] = jsonFormat4(UserCreated)
   implicit val LoginByEmailFormat: RootJsonFormat[LoginByEmail] = jsonFormat3(LoginByEmail)
+  implicit val LoginDetailsFormat: RootJsonFormat[LoginDetails] = jsonFormat4(LoginDetails)
+  implicit val LoggedInFormat: RootJsonFormat[LoggedIn] = jsonFormat2(LoggedIn)
 }

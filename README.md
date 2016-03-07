@@ -5,6 +5,33 @@ Mattermost for Scala (mm4s)
 
 [WIP] Mattermost API implemented using Akka HTTP and Streams
 
+
+#### API Bot
+
+The library provides an Actor implementation which can handle the majority of MM interaction.
+
+You can integrate this API Bot into your Actor hierarchy and use it as a gateway for other Actors.
+ 
+#### Bots HTTP Interface
+
+The Bot Gateway also supports a HTTP interface that can be used to receive callbacks from MM.
+
+Slash Commands and Outgoing Webhooks can target this interface which will route messages to the underlying actors.
+
+#### Docker Bots
+
+In addition to providing an API for interaction with MM this library also provides a convenient means of deploying Bots as Microservices.
+
+Bot Containers should be provided the following
+
+* BOT_USER - Bot Username - A username for the Bot, which will be used to create a Bot if not already existing
+* BOT_PASS - Bot Password - The password for the Bot account.  Be warned that security is pretty low speed right now.
+* BOT_CHANNEL - Channel ID - The channel the Bot lives in (for now only one) and messages to.
+
+#### Installation
+
+Create a Slash Command that points to the mm4s server
+
 #### Artifacts
 
 Add the bintray resolver

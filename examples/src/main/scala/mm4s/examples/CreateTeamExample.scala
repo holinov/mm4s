@@ -1,4 +1,4 @@
-package examples
+package mm4s.examples
 
 import java.util.UUID
 

@@ -3,8 +3,9 @@ Mattermost for Scala (mm4s)
 [![Build Status](https://travis-ci.org/jw3/mm4s.svg?branch=master)](https://travis-ci.org/jw3/mm4s)
 [![Dependencies](https://app.updateimpact.com/badge/701268856357916672/mm4s.svg?config=compile)](https://app.updateimpact.com/latest/701268856357916672/mm4s)
 
-[WIP] Mattermost API implemented using Akka HTTP and Streams
+Mattermost API implemented using Akka HTTP and Streams
 
+**[WIP] Rapidly changing API until the 0.1 release**
 
 #### API Bot
 
@@ -12,12 +13,6 @@ The library provides an Actor implementation which can handle the majority of MM
 
 You can integrate this API Bot into your Actor hierarchy and use it as a gateway for other Actors.
  
-#### Bots HTTP Interface
-
-The Bot Gateway also supports a HTTP interface that can be used to receive callbacks from MM.
-
-Slash Commands and Outgoing Webhooks can target this interface which will route messages to the underlying actors.
-
 #### Docker Bots
 
 In addition to providing an API for interaction with MM this library also provides a convenient means of deploying Bots as Microservices.
@@ -28,11 +23,21 @@ Bot Containers should be provided the following
 * BOT_PASS - Bot Password - The password for the Bot account.  Be warned that security is pretty low speed right now.
 * BOT_CHANNEL - Channel ID - The channel the Bot lives in (for now only one) and messages to.
 
+#### HTTP Bots
+
+*TODO*
+
+The Bot Gateway also supports a HTTP interface that can be used to receive callbacks from MM.
+
+Slash Commands and Outgoing Webhooks can target this interface which will route messages to the underlying actors.
+
 #### Installation
 
 Create a Slash Command that points to the mm4s server
 
 #### Artifacts
+
+*Not yet published, 0.1 will be first release*
 
 Add the bintray resolver
 

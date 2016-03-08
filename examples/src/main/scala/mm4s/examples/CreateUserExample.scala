@@ -5,9 +5,9 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink}
-import mm4s.Streams._
-import mm4s.UserModels.{CreateUser, LoginByUsername, UserCreated}
-import mm4s.{UserProtocols, Users}
+import mm4s.api.Streams._
+import mm4s.api.UserModels.{CreateUser, LoginByUsername, UserCreated}
+import mm4s.api.{UserProtocols, Users}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration

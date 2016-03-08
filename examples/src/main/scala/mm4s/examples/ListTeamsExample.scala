@@ -4,8 +4,8 @@ import java.util.UUID
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import mm4s.Streams._
-import mm4s.Teams
+import mm4s.api.{Teams, Streams}
+import Streams._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration

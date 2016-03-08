@@ -5,7 +5,8 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.MessageEntity
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
-import mm4s.UserModels.CreateUser
+import mm4s.api.{UserProtocols, UserModels}
+import UserModels.CreateUser
 import org.scalactic.FutureSugar
 import org.scalatest._
 import spray.json._

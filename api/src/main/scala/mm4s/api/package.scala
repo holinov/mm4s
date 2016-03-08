@@ -1,8 +1,10 @@
+package mm4s
+
 import akka.actor.ActorSystem
 
 import scala.concurrent.ExecutionContext
 
-package object mm4s {
+package object api {
   val mmapi: String = "/api/v1"
 
 

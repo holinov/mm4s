@@ -1,4 +1,4 @@
-package mm4s
+package mm4s.api
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport

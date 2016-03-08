@@ -1,4 +1,4 @@
-package mm4s
+package mm4s.api
 
 import akka.NotUsed
 import akka.actor.ActorSystem

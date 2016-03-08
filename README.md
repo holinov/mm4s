@@ -19,9 +19,19 @@ In addition to providing an API for interaction with MM this library also provid
 
 Bot Containers should be provided the following
 
+* MM_HOST - Mattermost Hostname - The name or ip of the MM server.
 * BOT_USER - Bot Username - A username for the Bot, which will be used to create a Bot if not already existing
 * BOT_PASS - Bot Password - The password for the Bot account.  Be warned that security is pretty low speed right now.
+* BOT_TEAM - Bot Team - The team to connect to, only one supported per Bot.
 * BOT_CHANNEL - Channel ID - The channel the Bot lives in (for now only one) and messages to.
+
+To build the Docker Bot image from the root project do a
+
+`sbt dockerbot/docker:publishLocal`
+
+and then
+
+`docker run jwiii/mm4s-dockerbot:0.1-SNAPSHOT`
 
 #### HTTP Bots
 

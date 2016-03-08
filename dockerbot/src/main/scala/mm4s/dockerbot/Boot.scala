@@ -1,8 +1,9 @@
 package mm4s.dockerbot
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Sink
+import akka.stream.scaladsl.{Flow, Sink}
 import com.typesafe.scalalogging.LazyLogging
 import mm4s.api.Streams._
 import mm4s.api.UserModels.LoginByUsername
@@ -26,18 +27,17 @@ object Boot extends App with LazyLogging {
   val team = sys.env.getOrElse("BOT_TEAM", "mmteam")
   val chan = sys.env.getOrElse("BOT_CHANNEL", "komb3qpj1pn4zytpkgrypsnwda")
 
-  val conn = connection(host)
+  val conn: Flow[HttpRequest, HttpResponse, _] = connection(host)
 
-  // spi!
-  //val impl = injectActor[DockerBot]
+  //val bot = injectActor[DockerBot]
 
-  val mm = Mattermost(chan)
-  val done = Connected(mm)
+  val api = Mattermost(chan)
+  val done = Connected(api /* <-- bot */ , conn /* hack;; conn here for now  */)
 
   Users.login(LoginByUsername(user, pass, team))
   .via(conn)
   .via(Users.extractSession())
-  .runWith(Sink.actorRef(Mattermost(chan), done))
+  .runWith(Sink.actorRef(api, done))
 
   Await.ready(system.whenTerminated, Duration.Inf)
 }

@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink}
 import mm4s.Streams._
-import mm4s.UserModels.{LoginByUsername, CreateUser, UserCreated}
+import mm4s.UserModels.{CreateUser, LoginByUsername, UserCreated}
 import mm4s.{UserProtocols, Users}
 
 import scala.concurrent.Await

@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import mm4s.Streams._
-import mm4s.{Teams, UserProtocols}
+import mm4s.Teams
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -16,7 +16,6 @@ import scala.concurrent.duration.Duration
 object ListTeamsExample extends App {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
-  import UserProtocols._
 
   val conn = connection("localhost")
 

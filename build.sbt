@@ -51,10 +51,9 @@ lazy val examples = project.in(file("examples"))
                     .settings(commonSettings: _*)
                     .settings(name := "mm4s-examples")
                     .settings(
-                      mainClass in assembly := Some("mm4s.dockerbot.Boot"),
+                      mainClass in Compile := Some("mm4s.dockerbot.Boot"),
                       dockerRepository := Some("jwiii"),
-                      dockerBaseImage := "anapsix/alpine-java:jre8",
-                      dockerEntrypoint := Seq("bin/mm4s-dockerbot")
+                      dockerBaseImage := "anapsix/alpine-java:jre8"
                     )
                     .enablePlugins(JavaAppPackaging)
 
@@ -63,7 +62,7 @@ lazy val dockerbot = project.in(file("dockerbot"))
                      .settings(commonSettings: _*)
                      .settings(name := "mm4s-dockerbot")
                      .settings(
-                       mainClass in assembly := Some("mm4s.dockerbot.Boot"),
+                       mainClass in Compile := Some("mm4s.dockerbot.Boot"),
                        dockerRepository := Some("jwiii"),
                        dockerBaseImage := "anapsix/alpine-java:jre8"
                      )

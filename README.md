@@ -33,6 +33,12 @@ and then
 
 `docker run jwiii/mm4s-dockerbot:0.1-SNAPSHOT`
 
+#### Dependency Injection
+
+Dependency injection is provided through [Akka Injects](https://github.com/jw3/akka-injects) and is available within any Dockerbot.
+
+See the Akka Injects readme for details on use.
+
 #### HTTP Bots
 
 *TODO*

@@ -7,7 +7,7 @@ import akka.stream.scaladsl.{Flow, Sink}
 import mm4s.api.MessageModels.CreatePost
 import mm4s.api.Messages
 import mm4s.api.UserModels.LoggedIn
-import mm4s.bots.api.Connected
+import mm4s.bots.api.{Message, BotID, Ready, Connected}
 
 
 object Mattermost {
@@ -22,15 +22,20 @@ class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor
   var conn: Option[Flow[HttpRequest, HttpResponse, _]] = None
 
   def receive: Receive = {
-    case Connected(api, c) => conn = Option(c)
-      login.zip(conn).foreach { c =>
-        val token = c._1.token
-        val user = c._1.details.username
-        Messages.create(CreatePost(s"Dockerbot $user just logged in!", channel), token).via(c._2).runWith(Sink.ignore)
-      }
+    case Connected(bot, c) =>
+      conn = Option(c)
+      val username = login.get /* hack */ .details.username
+      log.debug("[{}] has connected", username)
+      bot ! Ready(self, BotID(username))
 
     case m: LoggedIn =>
       login = Option(m)
       log.debug(s"Bot ${m.details.username} Logged In, $m")
+
+    case Message(t) =>
+      login.zip(conn).foreach { c =>
+        val token = c._1.token
+        Messages.create(CreatePost(t, channel), token).via(c._2).runWith(Sink.ignore)
+      }
   }
 }

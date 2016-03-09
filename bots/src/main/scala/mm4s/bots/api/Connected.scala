@@ -7,4 +7,4 @@ import akka.stream.scaladsl.Flow
 /**
  * Notify the Bot implementation of a successful connection
  */
-case class Connected(mm: ActorRef, conn: Flow[HttpRequest, HttpResponse, _])
+case class Connected(bot: ActorRef, conn: Flow[HttpRequest, HttpResponse, _])

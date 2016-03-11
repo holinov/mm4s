@@ -30,7 +30,8 @@ lazy val commonSettings = Seq(
 
       "org.scalactic" %% "scalactic" % scalaTest % Test,
       "org.scalatest" %% "scalatest" % scalaTest % Test,
-      "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test
+      "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test
     )
   }
 )

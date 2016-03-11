@@ -7,6 +7,8 @@ import scala.concurrent.ExecutionContext
 package object api {
   val mmapi: String = "/api/v1"
 
+  def uripath(suffix: String) = s"$mmapi$suffix"
+
 
   //\\ implicits //\\
 

@@ -27,7 +27,7 @@ object Streams {
    * Create a HttpRequest as a Source with access to modify its construction
    */
   def request(path: String)(builder: RequestBuilder)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
-    Source.fromFuture(builder(HttpRequest(uri = s"$mmapi$path")))
+    Source.fromFuture(builder(HttpRequest(uri = uripath(path))))
   }
 
   /**

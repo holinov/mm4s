@@ -4,6 +4,7 @@ package mm4s.dockerbot
 object ConfigKeys {
   object env {
     val host = "MM_HOST"
+    val port = "MM_PORT"
     val user = "BOT_USER"
     val pass = "BOT_PASS"
     val team = "BOT_TEAM"
@@ -12,15 +13,17 @@ object ConfigKeys {
 
   object key {
     val host = "mm.host"
-    val user = "mm.user"
-    val pass = "mm.pass"
-    val team = "mm.team"
-    val channel = "mm.channel"
+    val port = "mm.port"
+    val user = "mm.bot.user"
+    val pass = "mm.bot.pass"
+    val team = "mm.bot.team"
+    val channel = "mm.bot.channel"
   }
 
   val mmHost = "mattermost"
-  val mmUser = "bot"
-  val mmPass = "password"
-  val mmTeam = "bots"
-  val mmChannel = "Town Center"
+  val mmPort = "80"
+  val botUser = "bot"
+  val botPass = "password"
+  val botTeam = "bots"
+  val botChannel = "Town Center"
 }

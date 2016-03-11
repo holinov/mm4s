@@ -26,14 +26,15 @@ object Boot extends App with LazyLogging {
 
   import ConfigKeys._
   val host = resolve(env.host, key.host, mmHost)
-  val user = resolve(env.user, key.user, mmUser)
-  val pass = resolve(env.pass, key.pass, mmPass)
-  val team = resolve(env.team, key.team, mmTeam)
-  val chan = resolve(env.channel, key.channel, mmChannel)
+  val port = resolve(env.port, key.port, mmPort).toInt
+  val user = resolve(env.user, key.user, botUser)
+  val pass = resolve(env.pass, key.pass, botPass)
+  val team = resolve(env.team, key.team, botTeam)
+  val chan = resolve(env.channel, key.channel, botChannel)
 
   println(s"host:$host user:$user pass:$pass team:$team chan:$chan")
 
-  val conn: Flow[HttpRequest, HttpResponse, _] = connection(host)
+  val conn: Flow[HttpRequest, HttpResponse, _] = connection(host, port)
 
   val bot: ActorRef = injectActor[Bot]
   val done = Connected(bot, conn /* hack;; dont like conn here */)

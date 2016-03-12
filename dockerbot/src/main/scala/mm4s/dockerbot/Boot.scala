@@ -1,5 +1,7 @@
 package mm4s.dockerbot
 
+import java.util.UUID
+
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
@@ -20,34 +22,38 @@ import scala.concurrent.duration.Duration
  * Bootstrap a MM Bot
  */
 object Boot extends App with LazyLogging {
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
+  val config = Configuration.build()
 
-  val config = system.settings.config
+  // todo;; should have configured system name
+  val sysname = UUID.randomUUID.toString.take(7)
+  implicit val system: ActorSystem = ActorSystem(s"dockerbot-$sysname", config)
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
 
+  // todo;; better pattern for required vars
   import ConfigKeys._
-  import ConfigKeys.defaults._
-  val host = resolve(env.host, key.host, mmHost)
-  val port = resolve(env.port, key.port, mmPort).toInt
-  val user = resolve(env.user, key.user, botUser)
-  val pass = resolve(env.pass, key.pass, botPass)
-  val team = resolve(env.team, key.team, botTeam)
-  val chan = resolve(env.channel, key.channel, botChannel)
+  for {
+    host <- config.getAs[String](key.host);
+    port <- config.getAs[Int](key.port);
+    user <- config.getAs[String](key.user);
+    pass <- config.getAs[String](key.pass);
+    team <- config.getAs[String](key.team);
+    channel <- config.getAs[String](key.channel)
+  } yield (host, port, user, pass, team, channel) match {
+    case (_, _, _, _, _, _) =>
+      println(s"host:$host port:$port user:$user pass:$pass team:$team chan:$channel")
 
-  println(s"host:$host port:$port user:$user pass:$pass team:$team chan:$chan")
+      val conn: Flow[HttpRequest, HttpResponse, _] = connection(host, port)
 
-  val conn: Flow[HttpRequest, HttpResponse, _] = connection(host, port)
+      val bot: ActorRef = injectActor[Bot]
+      val done = Connected(bot, conn /* hack;; dont like conn here */)
 
-  val bot: ActorRef = injectActor[Bot]
-  val done = Connected(bot, conn /* hack;; dont like conn here */)
-
-  Users.login(LoginByUsername(user, pass, team))
-  .via(conn)
-  .via(Users.extractSession())
-  .runWith(Sink.actorRef(Mattermost(chan), done))
+      Users.login(LoginByUsername(user, pass, team))
+      .via(conn)
+      .via(Users.extractSession())
+      .runWith(Sink.actorRef(Mattermost(channel), done))
+    case _ =>
+      system.terminate()
+  }
 
   Await.ready(system.whenTerminated, Duration.Inf)
-
-  def resolve(env: String, key: String, default: String) =
-    sys.env.get(env).orElse(config.getAs[String](key)).getOrElse(default)
 }

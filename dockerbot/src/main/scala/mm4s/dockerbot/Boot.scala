@@ -11,8 +11,10 @@ import mm4s.api.UserModels.LoginByUsername
 import mm4s.api.Users
 import mm4s.bots.Mattermost
 import mm4s.bots.api.{Bot, Connected}
+import net.ceedubs.ficus.Ficus._
 
 import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /**
  * Bootstrap a MM Bot

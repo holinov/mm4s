@@ -7,6 +7,17 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.Cookie
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
+
+/**
+ * Message to be posted
+ */
+case class Post(text: String)
+
+/**
+ * Indicates a message was posted
+ */
+case class Posted(text: String)
+
 /**
  *
  */

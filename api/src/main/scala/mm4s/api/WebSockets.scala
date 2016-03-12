@@ -28,7 +28,7 @@ object WebSockets {
   def connect(ref: ActorRef, token: String, host: String, port: Int = 8080)(implicit system: ActorSystem, mat: ActorMaterializer) = {
     source()
     .viaMat(flow(token, host, port))(Keep.both)
-    .via(Flow[Message].collect { case m: TextMessage.Strict => m.text })
+    .via(Flow[Message].collect { case m: TextMessage.Strict => Posted(m.text) })
     .toMat(toActor(ref))(Keep.both)
     .run()
   }

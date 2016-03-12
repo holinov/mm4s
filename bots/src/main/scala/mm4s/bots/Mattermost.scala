@@ -1,6 +1,6 @@
 package mm4s.bots
 
-import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
+import akka.actor._
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink}
@@ -19,16 +19,18 @@ object Mattermost {
 class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
   var login: Option[LoggedIn] = None
   var conn: Option[Flow[HttpRequest, HttpResponse, _]] = None
+  var bot: Option[ActorRef] = None
 
   val mmhost: String = inject[String] annotated "mm.host"
   val mmport: String = inject[String] annotated "mm.port"
 
   def receive: Receive = {
-    case Connected(bot, c) =>
+    case Connected(b, c) =>
+      bot = Option(b)
       conn = Option(c)
       val username = login.get /* hack */ .details.username
       log.debug("[{}] has connected", username)
-      bot ! Ready(self, BotID(username))
+      bot.foreach(_ ! Ready(self, BotID(username)))
 
     case m: LoggedIn =>
       login = Option(m)
@@ -42,6 +44,6 @@ class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor
       }
 
     case m: String =>
-      log.debug("incoming: [{}]", m)
+      bot.foreach(_ ! Message(m))
   }
 }

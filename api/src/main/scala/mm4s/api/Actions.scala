@@ -1,30 +1,30 @@
 package mm4s.api
 
 sealed trait Action
-case object Unknown extends Action
-case object Typing extends Action
-case object Posted extends Action
-case object PostEdited extends Action
-case object PostDeleted extends Action
-case object ChannelViewed extends Action
-case object NewUser extends Action
-case object UserAdded extends Action
-case object UserRemoved extends Action
-case object PreferenceChanged extends Action
-case object EphemeralMessage extends Action
+case object UnknownAction extends Action
+case object TypingAction extends Action
+case object PostedAction extends Action
+case object PostEditedAction extends Action
+case object PostDeletedAction extends Action
+case object ChannelViewedAction extends Action
+case object NewUserAction extends Action
+case object UserAddedAction extends Action
+case object UserRemovedAction extends Action
+case object PreferenceChangedAction extends Action
+case object EphemeralMessageAction extends Action
 
 object Action {
   def apply(str: String) = str match {
-    case "typing" => Typing
-    case "posted" => Posted
-    case "post_edited" => PostEdited
-    case "post_deleted" => PostDeleted
-    case "channel_viewed" => ChannelViewed
-    case "new_user" => NewUser
-    case "user_added" => UserAdded
-    case "user_removed" => UserRemoved
-    case "preference_changed" => PreferenceChanged
-    case "ephemeral_message" => EphemeralMessage
-    case _ => Unknown
+    case "typing" => TypingAction
+    case "posted" => PostedAction
+    case "post_edited" => PostEditedAction
+    case "post_deleted" => PostDeletedAction
+    case "channel_viewed" => ChannelViewedAction
+    case "new_user" => NewUserAction
+    case "user_added" => UserAddedAction
+    case "user_removed" => UserRemovedAction
+    case "preference_changed" => PreferenceChangedAction
+    case "ephemeral_message" => EphemeralMessageAction
+    case _ => UnknownAction
   }
 }

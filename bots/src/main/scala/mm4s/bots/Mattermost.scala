@@ -4,11 +4,11 @@ import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink}
+import com.rxthings.di._
 import mm4s.api.MessageModels.CreatePost
-import mm4s.api.Messages
 import mm4s.api.UserModels.LoggedIn
-import mm4s.bots.api.{Message, BotID, Ready, Connected}
-
+import mm4s.api.{Messages, WebSockets}
+import mm4s.bots.api.{BotID, Connected, Message, Ready}
 
 object Mattermost {
   def apply(channel: String)(implicit system: ActorSystem, mat: ActorMaterializer) = {
@@ -17,9 +17,11 @@ object Mattermost {
 }
 
 class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
-  import context.system
   var login: Option[LoggedIn] = None
   var conn: Option[Flow[HttpRequest, HttpResponse, _]] = None
+
+  val mmhost: String = inject[String] annotated "mm.host"
+  val mmport: String = inject[String] annotated "mm.port"
 
   def receive: Receive = {
     case Connected(bot, c) =>
@@ -30,6 +32,7 @@ class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor
 
     case m: LoggedIn =>
       login = Option(m)
+      WebSockets.connect(self, m.token, mmhost, mmport.toInt /* hack;; #8 */)
       log.debug(s"Bot ${m.details.username} Logged In, $m")
 
     case Message(t) =>
@@ -37,5 +40,8 @@ class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor
         val token = c._1.token
         Messages.create(CreatePost(t, channel), token).via(c._2).runWith(Sink.ignore)
       }
+
+    case m: String =>
+      log.debug("incoming: [{}]", m)
   }
 }

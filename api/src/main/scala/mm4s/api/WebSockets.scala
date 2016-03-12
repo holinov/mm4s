@@ -1,16 +1,17 @@
 package mm4s.api
 
-import akka.actor.{ActorSystem, ActorRef}
+import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.Cookie
-import akka.http.scaladsl.model.ws.{Message, WebSocketRequest, TextMessage}
+import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
+import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
-import akka.stream.scaladsl.{Flow, Keep, Source, Sink}
 
 /**
  *
  */
 object WebSockets {
+  case object SocketClosed
 
   def flow(token: String, host: String, port: Int = 8080)(implicit system: ActorSystem) = {
     val mmheader = scala.collection.immutable.Seq(Cookie("MMTOKEN", token))
@@ -22,7 +23,7 @@ object WebSockets {
   }
 
   def toActor(ref: ActorRef)(implicit system: ActorSystem) = {
-    Sink.actorRef(ref, akka.Done)
+    Sink.actorRef(ref, SocketClosed)
   }
 
   def connect(ref: ActorRef, token: String, host: String, port: Int = 8080)(implicit system: ActorSystem, mat: ActorMaterializer) = {

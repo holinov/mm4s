@@ -20,10 +20,12 @@ object ConfigKeys {
     val channel = "mm.bot.channel"
   }
 
-  val mmHost = "mattermost"
-  val mmPort = "80"
-  val botUser = "bot"
-  val botPass = "password"
-  val botTeam = "bots"
-  val botChannel = "Town Center"
+  object defaults {
+    val mmHost = "mattermost"
+    val mmPort = "80"
+    val botUser = "bot"
+    val botPass = "password"
+    val botTeam = "bots"
+    val botChannel = "Town Center"
+  }
 }

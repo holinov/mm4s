@@ -11,9 +11,8 @@ import mm4s.api.UserModels.LoginByUsername
 import mm4s.api.Users
 import mm4s.bots.Mattermost
 import mm4s.bots.api.{Bot, Connected}
-import net.ceedubs.ficus.Ficus._
+
 import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 
 /**
  * Bootstrap a MM Bot
@@ -25,6 +24,7 @@ object Boot extends App with LazyLogging {
   val config = system.settings.config
 
   import ConfigKeys._
+  import ConfigKeys.defaults._
   val host = resolve(env.host, key.host, mmHost)
   val port = resolve(env.port, key.port, mmPort).toInt
   val user = resolve(env.user, key.user, botUser)
@@ -32,7 +32,7 @@ object Boot extends App with LazyLogging {
   val team = resolve(env.team, key.team, botTeam)
   val chan = resolve(env.channel, key.channel, botChannel)
 
-  println(s"host:$host user:$user pass:$pass team:$team chan:$chan")
+  println(s"host:$host port:$port user:$user pass:$pass team:$team chan:$chan")
 
   val conn: Flow[HttpRequest, HttpResponse, _] = connection(host, port)
 

@@ -8,6 +8,7 @@ import akka.stream.scaladsl.Sink
 import mm4s.api.MessageModels.CreatePost
 import mm4s.api.Streams._
 import mm4s.api.UserModels.{LoggedIn, LoginByUsername}
+import mm4s.api.WebSockets.SocketClosed
 import mm4s.api._
 
 import scala.concurrent.Await
@@ -31,14 +32,14 @@ object LoginExample extends App {
   Users.login(logindata)
   .via(conn)
   .via(Users.extractSession())
-  .runWith(Sink.actorRef(bot, Done()))
+  .runWith(Sink.actorRef(bot, LoginStreamClosed))
 
   Await.ready(system.whenTerminated, Duration.Inf)
 
   def rand() = UUID.randomUUID.toString.substring(0, 5)
 }
 
-case class Done()
+case object LoginStreamClosed
 
 object Bot {
   def apply(channel: String)(implicit system: ActorSystem, mat: ActorMaterializer) = {

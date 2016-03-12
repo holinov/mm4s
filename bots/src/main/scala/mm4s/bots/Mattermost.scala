@@ -7,8 +7,8 @@ import akka.stream.scaladsl.{Flow, Sink}
 import com.rxthings.di._
 import mm4s.api.MessageModels.CreatePost
 import mm4s.api.UserModels.LoggedIn
-import mm4s.api.{Messages, WebSockets}
-import mm4s.bots.api.{BotID, Connected, Message, Ready}
+import mm4s.api.{Post, Posted, Messages, WebSockets}
+import mm4s.bots.api._
 
 object Mattermost {
   def apply(channel: String)(implicit system: ActorSystem, mat: ActorMaterializer) = {
@@ -37,13 +37,13 @@ class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor
       WebSockets.connect(self, m.token, mmhost, mmport.toInt /* hack;; #8 */)
       log.debug(s"Bot ${m.details.username} Logged In, $m")
 
-    case Message(t) =>
+    case Post(t) =>
       login.zip(conn).foreach { c =>
         val token = c._1.token
         Messages.create(CreatePost(t, channel), token).via(c._2).runWith(Sink.ignore)
       }
 
-    case m: String =>
-      bot.foreach(_ ! Message(m))
+    case m: Posted =>
+      bot.foreach(_ ! m)
   }
 }

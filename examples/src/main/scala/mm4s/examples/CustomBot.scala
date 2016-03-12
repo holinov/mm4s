@@ -1,7 +1,7 @@
 package mm4s.examples
 
 import akka.actor._
-import mm4s.bots.api.{Message, BotID, Ready}
+import mm4s.bots.api.{BotID, Message, Ready}
 import net.codingwell.scalaguice.ScalaModule
 
 
@@ -16,6 +16,9 @@ class CustomBot extends Actor with mm4s.bots.api.Bot with ActorLogging {
       log.debug("Bot [{}] ready", id.get /* hack */ .username)
 
       api.foreach(_ ! Message("Here's Botty!"))
+
+    case Message(t) =>
+      log.debug("{} received {}", self.path.name, t)
   }
 }
 

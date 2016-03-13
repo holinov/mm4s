@@ -3,8 +3,6 @@ package mm4s.bots.api
 import akka.actor.ActorRef
 
 /**
- * sent to bots to alert them that the API is ready to work
- *
- * @param api The MM API Actor
+ * Notify the Bot implementation that the API is ready
  */
 case class Ready(api: ActorRef, id: BotID)

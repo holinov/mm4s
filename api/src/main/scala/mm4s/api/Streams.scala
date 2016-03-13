@@ -33,7 +33,7 @@ object Streams {
   /**
    * create a http connection to the host and port as a Flow[HttpRequest, HttpResponse, ]
    */
-  def connection(host: String, port: Int = 8080)(implicit system: ActorSystem) = {
+  def connection(host: String, port: Int = 8080)(implicit system: ActorSystem): ApiFlow = {
     Http().outgoingConnection(host, port)
   }
 

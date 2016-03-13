@@ -5,6 +5,6 @@ import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.stream.scaladsl.Flow
 
 /**
- * Notify the Bot implementation of a successful connection
+ * Register the Bot with the API
  */
-case class Connected(bot: ActorRef, conn: Flow[HttpRequest, HttpResponse, _])
+case class Register(bot: ActorRef)

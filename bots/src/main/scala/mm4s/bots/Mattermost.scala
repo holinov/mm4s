@@ -1,49 +1,48 @@
 package mm4s.bots
 
 import akka.actor._
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Sink}
+import akka.stream.scaladsl.Sink
 import com.rxthings.di._
 import mm4s.api.MessageModels.CreatePost
 import mm4s.api.UserModels.LoggedIn
-import mm4s.api.{Post, Posted, Messages, WebSockets}
+import mm4s.api._
 import mm4s.bots.api._
 
 object Mattermost {
-  def apply(channel: String)(implicit system: ActorSystem, mat: ActorMaterializer) = {
-    system.actorOf(Props(new Mattermost(channel)))
+  def apply(channel: String, flow: ApiFlow)(implicit system: ActorSystem, mat: ActorMaterializer) = {
+    system.actorOf(Props(new Mattermost(channel, flow)))
   }
 }
 
-class Mattermost(channel: String)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
-  var login: Option[LoggedIn] = None
-  var conn: Option[Flow[HttpRequest, HttpResponse, _]] = None
-  var bot: Option[ActorRef] = None
-
+class Mattermost(channel: String, flow: ApiFlow)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
   val mmhost: String = inject[String] annotated "mm.host"
   val mmport: String = inject[String] annotated "mm.port"
 
   def receive: Receive = {
-    case Connected(b, c) =>
-      bot = Option(b)
-      conn = Option(c)
-      val username = login.get /* hack */ .details.username
-      log.debug("[{}] has connected", username)
-      bot.foreach(_ ! Ready(self, BotID(username)))
+    case l: LoggedIn =>
+      context.become(loggedin(l))
+  }
 
-    case m: LoggedIn =>
-      login = Option(m)
-      WebSockets.connect(self, m.token, mmhost, mmport.toInt /* hack;; #8 */)
-      log.debug(s"Bot ${m.details.username} Logged In, $m")
+  def loggedin(l: LoggedIn): Receive = {
+    WebSockets.connect(self, l.token, mmhost, mmport.toInt /* hack;; #8 */)
+    log.debug(s"Bot ${l.details.username} Logged In, $l")
 
-    case Post(t) =>
-      login.zip(conn).foreach { c =>
-        val token = c._1.token
-        Messages.create(CreatePost(t, channel), token).via(c._2).runWith(Sink.ignore)
-      }
+    {
+      case r: Register =>
+        context.become(registered(r, l))
+    }
+  }
 
-    case m: Posted =>
-      bot.foreach(_ ! m)
+  def registered(r: Register, l: LoggedIn): Receive = {
+    log.debug("[{}] has registered", l.details.username)
+
+    {
+      case Post(t) =>
+        Messages.create(CreatePost(t, channel), l.token).via(flow).runWith(Sink.ignore)
+
+      case m: Posted =>
+        r.bot ! m
+    }
   }
 }

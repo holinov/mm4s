@@ -10,9 +10,9 @@ import com.rxthings.di._
 import com.typesafe.scalalogging.LazyLogging
 import mm4s.api.Streams._
 import mm4s.api.UserModels.LoginByUsername
-import mm4s.api.Users
+import mm4s.api.{ApiFlow, Users}
 import mm4s.bots.Mattermost
-import mm4s.bots.api.{Bot, Connected}
+import mm4s.bots.api.{Bot, Register}
 import net.ceedubs.ficus.Ficus._
 
 import scala.concurrent.Await
@@ -42,15 +42,13 @@ object Boot extends App with LazyLogging {
     case (_, _, _, _, _, _) =>
       println(s"host:$host port:$port user:$user pass:$pass team:$team chan:$channel")
 
-      val conn: Flow[HttpRequest, HttpResponse, _] = connection(host, port)
-
       val bot: ActorRef = injectActor[Bot]
-      val done = Connected(bot, conn /* hack;; dont like conn here */)
+      val flow: ApiFlow = connection(host, port)
 
       Users.login(LoginByUsername(user, pass, team))
-      .via(conn)
+      .via(flow)
       .via(Users.extractSession())
-      .runWith(Sink.actorRef(Mattermost(channel), done))
+      .runWith(Sink.actorRef(Mattermost(channel, flow), Register(bot)))
     case _ =>
       system.terminate()
   }

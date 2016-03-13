@@ -37,6 +37,7 @@ class Mattermost(channel: String, flow: ApiFlow)(implicit mat: ActorMaterializer
 
   def registered(r: Register, l: LoggedIn): Receive = {
     log.debug("[{}] has registered", l.details.username)
+    r.bot ! Ready(self, BotID(l.details.username))
 
     {
       case Post(t) =>

@@ -15,7 +15,7 @@ object WebSockets {
 
   def flow(token: String, host: String, port: Int = 8080)(implicit system: ActorSystem) = {
     val mmheader = scala.collection.immutable.Seq(Cookie("MMTOKEN", token))
-    Http().webSocketClientFlow(WebSocketRequest(s"ws://$host:$port$mmapi/websocket?session_token_index=0", extraHeaders = mmheader))
+    Http().webSocketClientFlow(WebSocketRequest(s"ws://$host:$port$mmapi/websocket", extraHeaders = mmheader))
   }
 
   def source()(implicit system: ActorSystem) = {

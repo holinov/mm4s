@@ -3,16 +3,15 @@ package mm4s.dockerbot
 import java.util.UUID
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Sink}
+import akka.stream.scaladsl.Sink
 import com.rxthings.di._
 import com.typesafe.scalalogging.LazyLogging
 import mm4s.api.Streams._
 import mm4s.api.UserModels.LoginByUsername
 import mm4s.api.{ApiFlow, Users}
 import mm4s.bots.Mattermost
-import mm4s.bots.api.{Bot, Register}
+import mm4s.bots.api.{Bot, ConfigKeys, Register}
 import net.ceedubs.ficus.Ficus._
 
 import scala.concurrent.Await

@@ -1,5 +1,6 @@
 import com.typesafe.config.ConfigFactory
-import mm4s.dockerbot.{Configuration, ConfigKeys}
+import mm4s.bots.api.ConfigKeys
+import mm4s.dockerbot.Configuration
 import net.ceedubs.ficus.Ficus._
 import org.scalatest.{Matchers, WordSpec}
 import scala.collection.JavaConversions._
@@ -29,7 +30,7 @@ class ConfigurationSpec extends WordSpec with Matchers {
 
     "use defaults" in {
       val config = ConfigFactory.parseMap(Map(host -> expectedhost2))
-      Configuration.build(config)(Map()).as[String](pass) shouldBe ConfigKeys.defaults.botPass
+      Configuration.build(config)(Map()).as[String](port) shouldBe ConfigKeys.defaults.mmPort
     }
   }
 }

@@ -17,7 +17,7 @@ object Mattermost {
 
 class Mattermost(channel: String, flow: ApiFlow)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
   val mmhost: String = inject[String] annotated "mm.host"
-  val mmport: String = inject[String] annotated "mm.port"
+  val mmport: Int = inject[Int] annotated "mm.port"
 
   def receive: Receive = {
     case l: LoggedIn =>

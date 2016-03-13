@@ -22,7 +22,7 @@ object Configuration {
 
     ConfigFactory.parseMap(Map(
       key.host -> host,
-      key.port -> port,
+      key.port -> Int.box(port.toInt),
       key.user -> user,
       key.pass -> pass,
       key.team -> team,

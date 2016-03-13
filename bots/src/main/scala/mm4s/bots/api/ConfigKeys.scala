@@ -1,5 +1,4 @@
-package mm4s.dockerbot
-
+package mm4s.bots.api
 
 object ConfigKeys {
   object env {
@@ -23,9 +22,5 @@ object ConfigKeys {
   object defaults {
     val mmHost = "mattermost"
     val mmPort = "80"
-    val botUser = "bot"
-    val botPass = "password"
-    val botTeam = "bots"
-    val botChannel = "Town Center"
   }
 }

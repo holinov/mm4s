@@ -7,6 +7,7 @@ import com.rxthings.di._
 import mm4s.api.MessageModels.CreatePost
 import mm4s.api.UserModels.LoggedIn
 import mm4s.api._
+import mm4s.bots.api.ConfigKeys._
 import mm4s.bots.api._
 
 object Mattermost {
@@ -16,8 +17,8 @@ object Mattermost {
 }
 
 class Mattermost(channel: String, flow: ApiFlow)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
-  val mmhost: String = inject[String] annotated "mm.host"
-  val mmport: Int = inject[Int] annotated "mm.port"
+  val mmhost: String = inject[String] annotated key.host
+  val mmport: Int = inject[Int] annotated key.port
 
   def receive: Receive = {
     case l: LoggedIn =>

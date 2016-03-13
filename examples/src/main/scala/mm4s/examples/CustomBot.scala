@@ -1,25 +1,25 @@
 package mm4s.examples
 
 import akka.actor._
-import mm4s.api.{Post, Posted}
+import mm4s.api.Posted
 import mm4s.bots.api.{BotID, Ready}
 import net.codingwell.scalaguice.ScalaModule
 
 
 class CustomBot extends Actor with mm4s.bots.api.Bot with ActorLogging {
-  var api: Option[ActorRef] = None
-  var id: Option[BotID] = None
 
   def receive: Receive = {
-    case Ready(mm, botid) =>
-      api = Option(mm)
-      id = Option(botid)
-      log.debug("Bot [{}] ready", id.get /* hack */ .username)
+    case Ready(api, id) =>
+      context.become(ready(api, id))
+  }
 
-      api.foreach(_ ! Post("Here's Botty!"))
+  def ready(api: ActorRef, id: BotID): Receive = {
+    log.debug("Bot [{}] ready", id.username)
 
-    case Posted(t) =>
-      log.debug("{} received {}", self.path.name, t)
+    {
+      case Posted(t) =>
+        log.debug("{} received {}", self.path.name, t)
+    }
   }
 }
 

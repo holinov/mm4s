@@ -6,6 +6,7 @@ import akka.stream.scaladsl.Sink
 import com.rxthings.di._
 import mm4s.api.MessageModels.CreatePost
 import mm4s.api.UserModels.LoggedIn
+import mm4s.api.WebSocketModels.WebSocketMessage
 import mm4s.api._
 import mm4s.bots.api.ConfigKeys._
 import mm4s.bots.api._
@@ -43,8 +44,8 @@ class Mattermost(channel: String, flow: ApiFlow)(implicit mat: ActorMaterializer
       case Post(t) =>
         Messages.create(CreatePost(t, channel), l.token).via(flow).runWith(Sink.ignore)
 
-      case m: Posted =>
-        r.bot ! m
+      case wsm: WebSocketMessage =>
+        wsm.props.posted.foreach(p => r.bot ! Posted(p.message))
     }
   }
 }

@@ -41,9 +41,9 @@ object WebSockets {
 object WebSocketModels {
   case class WebSocketMessage(team_id: String, channel_id: String, user_id: String, action: Action, props: WsmProps)
   case class WsmPost(id: String, create_at: Long, user_id: String, channel_id: String, message: String, `type`: String, hashtags: String, filenames: Seq[String])
-  case class WsmProps(channel_type: String, otherFile: String, post: String) {
+  case class WsmProps(channel_type: Option[String], otherFile: Option[String], post: Option[String]) {
     import WebSocketProtocol.wsmPostFormat
-    def posted: WsmPost = post.parseJson.convertTo[WsmPost]
+    def posted: Option[WsmPost] = post.map(_.parseJson.convertTo[WsmPost])
   }
 }
 

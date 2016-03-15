@@ -30,15 +30,18 @@ class WebsocketProtocolSpec extends WordSpec with Matchers {
       message.channel_id shouldBe "cid"
       message.user_id shouldBe "uid"
       message.action shouldBe PostedAction
-      message.props.channel_type shouldBe "O"
-      message.props.otherFile shouldBe "true"
-      message.props.posted.id shouldBe "pid"
-      message.props.posted.create_at shouldBe 1
-      message.props.posted.user_id shouldBe "puid"
-      message.props.posted.channel_id shouldBe "pcid"
-      message.props.posted.message shouldBe "msg"
-      message.props.posted.hashtags shouldBe "#bar #baz #bash"
-      message.props.posted.filenames shouldBe Seq("/a/b/c/d.pdf")
+      message.props.channel_type shouldBe Some("O")
+      message.props.otherFile shouldBe Some("true")
+
+      message.props.posted shouldBe defined
+      val posted = message.props.posted.get
+      posted.id shouldBe "pid"
+      posted.create_at shouldBe 1
+      posted.user_id shouldBe "puid"
+      posted.channel_id shouldBe "pcid"
+      posted.message shouldBe "msg"
+      posted.hashtags shouldBe "#bar #baz #bash"
+      posted.filenames shouldBe Seq("/a/b/c/d.pdf")
     }
   }
 }

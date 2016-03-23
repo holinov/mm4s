@@ -28,3 +28,13 @@ mattermost:
     SERVICE_CHECK_HTTP: /
     SERVICE_CHECK_INTERVAL: 15s
     SERVICE_CHECK_TIMEOUT: 1s
+
+initializer:
+  build: initializer
+  dns:
+    - "172.17.0.1"
+  dns_search:
+    - "service.consul"
+  links: # depends_on:
+    - "mattermost"
+  entrypoint: /mm4s/bin/wait-for-it.sh -t 60 mattermost:80 -- /mm4s/bin/mmaccounts.sh

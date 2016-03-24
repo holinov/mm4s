@@ -27,6 +27,7 @@ object Teams {
 }
 
 object TeamModels {
+  case class Team(id: String, name: String)
   case class CreateTeam(display_name: String, name: String, email: String, `type`: String = "O")
   case class TeamCreated(id: String, display_name: String, name: String, email: String)
 }
@@ -36,4 +37,5 @@ object TeamProtocols extends DefaultJsonProtocol with SprayJsonSupport {
 
   implicit val CreateTeamFormat: RootJsonFormat[CreateTeam] = jsonFormat4(CreateTeam)
   implicit val TeamCreatedFormat: RootJsonFormat[TeamCreated] = jsonFormat4(TeamCreated)
+  implicit val TeamFormat: RootJsonFormat[Team] = jsonFormat2(Team)
 }

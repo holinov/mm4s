@@ -4,7 +4,6 @@ lazy val commonSettings = Seq(
   version := "0.1-SNAPSHOT",
   licenses +=("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
 
-
   scalaVersion := "2.11.7",
   scalacOptions += "-target:jvm-1.8",
 
@@ -36,24 +35,29 @@ lazy val commonSettings = Seq(
   }
 )
 
-lazy val mm4s = project.in(file(".")).aggregate(api, bots, dockerbot)
+lazy val mm4s =
+  project.in(file("."))
+  .aggregate(api, bots, dockerbot)
 
-lazy val api = project.in(file("api"))
-               .settings(commonSettings: _*)
-               .settings(name := "mm4s-api")
+lazy val api =
+  project.in(file("api"))
+  .settings(commonSettings: _*)
+  .settings(name := "mm4s-api")
 
-lazy val bots = project.in(file("bots"))
-                .dependsOn(api)
-                .settings(commonSettings: _*)
-                .settings(name := "mm4s-bots")
+lazy val bots =
+  project.in(file("bots"))
+  .dependsOn(api)
+  .settings(commonSettings: _*)
+  .settings(name := "mm4s-bots")
 
-lazy val dockerbot = project.in(file("dockerbot"))
-                     .dependsOn(api, bots)
-                     .settings(commonSettings: _*)
-                     .settings(name := "mm4s-dockerbot")
-                     .settings(
-                       mainClass in Compile := Some("mm4s.dockerbot.Boot"),
-                       dockerRepository := Some("jwiii"),
-                       dockerBaseImage := "anapsix/alpine-java:jre8"
-                     )
-                     .enablePlugins(JavaAppPackaging)
+lazy val dockerbot =
+  project.in(file("dockerbot"))
+  .dependsOn(api, bots)
+  .settings(commonSettings: _*)
+  .settings(name := "mm4s-dockerbot")
+  .settings(
+    mainClass in Compile := Some("mm4s.dockerbot.Boot"),
+    dockerRepository := Some("jwiii"),
+    dockerBaseImage := "anapsix/alpine-java:jre8"
+  )
+  .enablePlugins(JavaAppPackaging)

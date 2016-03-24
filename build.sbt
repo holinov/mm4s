@@ -36,7 +36,7 @@ lazy val commonSettings = Seq(
   }
 )
 
-lazy val root = project.in(file(".")).aggregate(api, bots, examples, dockerbot)
+lazy val mm4s = project.in(file(".")).aggregate(api, bots, dockerbot)
 
 lazy val api = project.in(file("api"))
                .settings(commonSettings: _*)
@@ -46,17 +46,6 @@ lazy val bots = project.in(file("bots"))
                 .dependsOn(api)
                 .settings(commonSettings: _*)
                 .settings(name := "mm4s-bots")
-
-lazy val examples = project.in(file("examples"))
-                    .dependsOn(api, bots, dockerbot)
-                    .settings(commonSettings: _*)
-                    .settings(name := "mm4s-examples")
-                    .settings(
-                      mainClass in Compile := Some("mm4s.dockerbot.Boot"),
-                      dockerRepository := Some("jwiii"),
-                      dockerBaseImage := "anapsix/alpine-java:jre8"
-                    )
-                    .enablePlugins(JavaAppPackaging)
 
 lazy val dockerbot = project.in(file("dockerbot"))
                      .dependsOn(api, bots)

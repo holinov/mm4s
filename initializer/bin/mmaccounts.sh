@@ -1,7 +1,7 @@
 #!/bin/bash
 
-MM_HOST=mattermost
-MM_PORT=80
+MM_HOST="${MM_HOST:-mattermost}"
+MM_PORT="${MM_PORT:-80}"
 MM_URL="http://$MM_HOST:$MM_PORT/api/v1"
 
 echoerr() { if [[ ${QUIET} -ne 1 ]]; then echo "$@" 1>&2; fi }

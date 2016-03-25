@@ -5,12 +5,21 @@ scala:
    - 2.11.7
 jdk:
   - oraclejdk8
+
+before_script:
+  - chmod +x -R initializer/bin
+  - /usr/bin/env bash -c "sleep 30"
+  - initializer/bin/mmaccounts.sh
 script:
   - sbt ++$TRAVIS_SCALA_VERSION test updateImpactSubmit
 
 services:
   - docker
 before_install:
+  - sudo apt-get install -y --no-install-recommends curl jq
   - docker pull mattermost/platform:2.0
   - docker run -d -p 8080:80 mattermost/platform:2.0
   - docker ps -a
+
+env:
+  - MM_HOST=localhost MM_PORT=8080

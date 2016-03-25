@@ -1,10 +1,12 @@
 package mm4s.api
 
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.Cookie
+import akka.stream.scaladsl.Source
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 /**
@@ -15,13 +17,19 @@ object Teams {
   import TeamModels._
   import TeamProtocols._
 
-  def create(team: CreateTeam)(implicit system: ActorSystem) = {
+  def create(team: CreateTeam)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
     request("/teams/create") { r =>
       Marshal(team).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
     }
   }
 
-  def list(token: String)(implicit system: ActorSystem) = {
+  def find(name: String, token: String)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
+    get("/teams/find_team_by_name").map(r =>
+      r.withMethod(HttpMethods.POST).withHeaders(Cookie("MMTOKEN", token)).withEntity(s"""{"name":"$name"}""")
+    )
+  }
+
+  def list(token: String)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
     get("/teams/all").map(r => r.withHeaders(Cookie("MMTOKEN", token)))
   }
 }

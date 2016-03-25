@@ -1,13 +1,14 @@
 package mm4s.api
 
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling._
-import akka.http.scaladsl.model.headers.`Set-Cookie`
-import akka.http.scaladsl.model.{HttpMethods, HttpResponse, MessageEntity}
+import akka.http.scaladsl.model.headers.{Cookie, `Set-Cookie`}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, MessageEntity}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Flow
+import akka.stream.scaladsl.{Flow, Source}
 import spray.json._
 
 
@@ -27,6 +28,10 @@ object Users {
     }
   }
 
+  def list(team: String, token: String)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
+    get("/users/profiles").map(r => r.withHeaders(Cookie("MMTOKEN", token)))
+  }
+
   def login(byUsername: LoginByUsername)(implicit system: ActorSystem) = {
     request("/users/login") { r =>
       Marshal(byUsername).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withEntity)
@@ -43,6 +48,7 @@ object Users {
 
 
 object UserModels {
+  case class User(id: String, username: String)
   case class CreateUser(username: String, password: String, email: String, team_id: String)
   case class UserCreated(id: String, username: String, email: String, team_id: String)
   case class LoginByUsername(username: String, password: String, name: String /*team name*/)
@@ -53,6 +59,7 @@ object UserModels {
 object UserProtocols extends DefaultJsonProtocol with SprayJsonSupport {
   import UserModels._
 
+  implicit val UserFormat: RootJsonFormat[User] = jsonFormat2(User)
   implicit val CreateUserFormat: RootJsonFormat[CreateUser] = jsonFormat4(CreateUser)
   implicit val UserCreatedFormat: RootJsonFormat[UserCreated] = jsonFormat4(UserCreated)
   implicit val LoginByUsernameFormat: RootJsonFormat[LoginByUsername] = jsonFormat3(LoginByUsername)

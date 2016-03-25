@@ -22,7 +22,6 @@ class CreateAndListTeamsSpec extends TestKit(ActorSystem()) with AsyncWordSpecLi
 
   val name = random()
   val email = s"a${random()}@bar.com"
-  val cteam = CreateTeam(name, name, email)
 
   val session = Await.result(token(), 10.seconds)
 
@@ -30,15 +29,13 @@ class CreateAndListTeamsSpec extends TestKit(ActorSystem()) with AsyncWordSpecLi
     import mm4s.api.TeamProtocols._
 
     "not exist" taggedAs integration in {
-      Teams.list(session.token).via(connection()).mapAsync(1)(r => Unmarshal(r).to[Map[String, Team]]).map { teams =>
-        teams shouldNot matchPattern {
-          case Entry(_, Team(_, name)) =>
-        }
-      }.runWith(Sink.head)
+      Teams.list(session.token).via(connection()).mapAsync(1)(r => Unmarshal(r).to[Map[String, Team]])
+      .map(_.values.map(_.name)).map(_ shouldNot contain(name))
+      .runWith(Sink.head)
     }
 
     "be created" taggedAs integration in {
-      Teams.create(cteam)
+      Teams.create(CreateTeam(name, name, email))
       .via(connection())
       .via(response[TeamCreated])
       .runWith(Sink.head).map { res =>

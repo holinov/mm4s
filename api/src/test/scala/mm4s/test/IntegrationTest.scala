@@ -9,7 +9,7 @@ import mm4s.api.UserModels.{LoggedIn, LoginByUsername}
 import mm4s.api.{Streams, Users}
 import org.scalatest.Tag
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 
 trait IntegrationTest {

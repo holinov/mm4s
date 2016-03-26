@@ -32,7 +32,7 @@ class FileAccessSpec extends TestKit(ActorSystem()) with AsyncWordSpecLike with 
   Source.single(content).to(Sink.foreach(c => Files.write(fspath, c.getBytes))).run()
 
   val userid = session.details.id
-  val channelid = "6wpnfat4tjrntbd8563x9q9bee" // Await.result(channel(), 10.seconds)
+  val channelid = Await.result(channel(), 10.seconds)
 
 
   "Files" should {

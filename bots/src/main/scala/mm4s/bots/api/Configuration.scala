@@ -1,8 +1,6 @@
-package mm4s.dockerbot
+package mm4s.bots.api
 
 import com.typesafe.config.{Config, ConfigFactory}
-import mm4s.bots.api.ConfigKeys
-import mm4s.bots.api.ConfigKeys.{env, key}
 import net.ceedubs.ficus.Ficus._
 
 import scala.collection.JavaConversions._

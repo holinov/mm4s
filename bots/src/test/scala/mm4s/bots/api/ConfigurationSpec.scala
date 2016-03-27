@@ -1,8 +1,9 @@
+package mm4s.bots.api
+
 import com.typesafe.config.ConfigFactory
-import mm4s.bots.api.ConfigKeys
-import mm4s.dockerbot.Configuration
 import net.ceedubs.ficus.Ficus._
 import org.scalatest.{Matchers, WordSpec}
+
 import scala.collection.JavaConversions._
 
 

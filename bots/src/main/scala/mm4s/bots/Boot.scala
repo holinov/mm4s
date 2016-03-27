@@ -1,4 +1,4 @@
-package mm4s.dockerbot
+package mm4s.bots
 
 import java.util.UUID
 
@@ -10,8 +10,7 @@ import com.typesafe.scalalogging.LazyLogging
 import mm4s.api.Streams._
 import mm4s.api.UserModels.LoginByUsername
 import mm4s.api.{ApiFlow, Users}
-import mm4s.bots.Mattermost
-import mm4s.bots.api.{Bot, ConfigKeys, Register}
+import mm4s.bots.api.{Configuration, Bot, ConfigKeys, Register}
 import net.ceedubs.ficus.Ficus._
 
 import scala.concurrent.Await

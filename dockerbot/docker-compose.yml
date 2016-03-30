@@ -1,0 +1,32 @@
+consul:
+  command: -server -bootstrap -advertise 172.17.0.1
+  image: gliderlabs/consul-server:latest
+  ports:
+    - "8400:8400"
+    - "8500:8500"
+    - "172.17.0.1:53:8600/udp"
+
+registrator:
+  command: -ip 172.17.0.1 consul://consul:8500
+  image: gliderlabs/registrator:master
+  links:
+    - consul
+  volumes:
+    - "/var/run/docker.sock:/tmp/docker.sock"
+
+
+##########################
+#  Example Consul tie-in
+##########################
+#
+#  dns:
+#    - "172.17.0.1"
+#  dns_search:
+#    - "service.consul"
+#  environment:
+#    SERVICE_NAME: mattermost
+#    SERVICE_TAGS: chat
+#    SERVICE_CHECK_HTTP: /
+#    SERVICE_CHECK_INTERVAL: 15s
+#    SERVICE_CHECK_TIMEOUT: 1s
+#

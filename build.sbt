@@ -17,6 +17,9 @@ lazy val commonSettings = Seq(
     Seq(
       "com.rxthings" %% "akka-injects" % "0.4",
 
+      "io.reactivex" %% "rxscala" % "0.26.0",
+      "com.shekhargulati.reactivex" % "rx-docker-client" % "0.2.0",
+
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-stream" % akkaVersion,
       "com.typesafe.akka" %% "akka-http-core" % akkaVersion,

@@ -5,6 +5,7 @@ import akka.actor.{Actor, ActorLogging, Props}
 import com.shekhargulati.reactivex.docker.client.RxDockerClient
 import com.shekhargulati.reactivex.docker.client.representations.{DockerContainerRequestBuilder, DockerContainerResponse}
 import com.shekhargulati.reactivex.rxokhttp.HttpStatus
+import mm4s.dockerbot.DeployModels._
 import rx.lang.scala.JavaConversions._
 import rx.lang.scala.Observable
 
@@ -19,19 +20,19 @@ object DockerDeployer {
 
 class DockerDeployer extends Actor with ActorLogging {
   def receive: Receive = {
-    case d: Deploy =>
+    case d @ Deploy(name, image, ports) =>
       val s = sender()
       val client = RxDockerClient.fromDefaultEnv()
       val request = new DockerContainerRequestBuilder()
-                    .setImage(d.image)
-                    .addExposedPort(d.ports: _*)
-                    .setEnv(List(s"SERVICE_NAME=${d.name}", s"SERVICE_TAGS=dockerbot"))
+                    .setImage(image)
+                    .addExposedPort(ports: _*)
+                    .setEnv(List(s"SERVICE_NAME=$name", s"SERVICE_TAGS=dockerbot"))
                     .createDockerContainerRequest()
 
-      val obs: Observable[DockerContainerResponse] = client.createContainerObs(request, d.name)
+      val obs: Observable[DockerContainerResponse] = client.createContainerObs(request, name)
       obs.flatMap { r =>
         val o: Observable[HttpStatus] = client.startContainerObs(r.getId)
-        o.map(x => r.getId)
+        o.map(x => DeployResult(r.getId, d))
       }.subscribe(r => s ! r)
   }
 }

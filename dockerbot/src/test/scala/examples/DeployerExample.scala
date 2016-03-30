@@ -3,7 +3,8 @@ package examples
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
-import mm4s.dockerbot.{Deploy, DockerDeployer}
+import mm4s.dockerbot.DeployModels._
+import mm4s.dockerbot.DockerDeployer
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, DurationInt}

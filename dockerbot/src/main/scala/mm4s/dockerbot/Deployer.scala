@@ -5,22 +5,20 @@ import akka.actor.{Actor, ActorLogging, Props}
 import com.shekhargulati.reactivex.docker.client.RxDockerClient
 import com.shekhargulati.reactivex.docker.client.representations.{DockerContainerRequestBuilder, DockerContainerResponse}
 import com.shekhargulati.reactivex.rxokhttp.HttpStatus
-import mm4s.dockerbot.DeployModels._
+import mm4s.dockerbot.DeploymentModels._
 import rx.lang.scala.JavaConversions._
 import rx.lang.scala.Observable
 
 import scala.collection.JavaConversions._
 
-/**
- * Provide actor based interface to deploy
- */
-object DockerDeployer {
-  def props() = Props(new DockerDeployer)
+
+object Deployer {
+  def props() = Props(new Deployer)
 }
 
-class DockerDeployer extends Actor with ActorLogging {
+class Deployer extends Actor with ActorLogging {
   def receive: Receive = {
-    case d @ Deploy(name, image, ports) =>
+    case d @ DeployRequest(name, image, ports) =>
       val s = sender()
       val client = RxDockerClient.fromDefaultEnv()
       val request = new DockerContainerRequestBuilder()

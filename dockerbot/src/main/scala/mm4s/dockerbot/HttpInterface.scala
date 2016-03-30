@@ -9,8 +9,8 @@ import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
-import mm4s.dockerbot.DeployModels._
-import mm4s.dockerbot.DeployProtocols._
+import mm4s.dockerbot.DeploymentModels._
+import mm4s.dockerbot.DeploymentProtocols._
 
 import scala.concurrent.duration.DurationInt
 
@@ -27,7 +27,7 @@ class HttpInterface(deployer: ActorRef)(implicit val actorSystem: ActorSystem, v
   val routes =
     post {
       path("deploy") {
-        entity(as[Deploy]) { d =>
+        entity(as[DeployRequest]) { d =>
           complete {
             (deployer ? d).mapTo[DeployResult]
           }

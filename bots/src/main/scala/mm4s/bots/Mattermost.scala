@@ -12,12 +12,12 @@ import mm4s.bots.api.ConfigKeys._
 import mm4s.bots.api._
 
 object Mattermost {
-  def apply(channel: String, flow: ApiFlow)(implicit system: ActorSystem, mat: ActorMaterializer) = {
+  def apply(channel: String, flow: Connection)(implicit system: ActorSystem, mat: ActorMaterializer) = {
     system.actorOf(Props(new Mattermost(channel, flow)))
   }
 }
 
-class Mattermost(channel: String, flow: ApiFlow)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
+class Mattermost(channel: String, flow: Connection)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
   val mmhost: String = inject[String] annotated key.host
   val mmport: Int = inject[Int] annotated key.port
 

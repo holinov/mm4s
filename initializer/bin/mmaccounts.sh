@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 MM_HOST="${MM_HOST:-mattermost}"
 MM_PORT="${MM_PORT:-80}"
@@ -17,8 +17,10 @@ main() {
     local bots=$(curl -s -H "Content-Type: application/json" -d "{\"email\":\"$admin_email\",\"name\":\"bots\",\"display_name\":\"Bots\",\"type\":\"O\"}" "$MM_URL/teams/create" | jq -r .id)
     echoerr "created bots team: $bots"
 
-    local admin_id=$(curl -s -H "Content-Type: application/json" -d "{\"email\":\"$admin_email\",\"username\":\"$admin_username\",\"password\":\"password\",\"team_id\":\"$humans\"}" "$MM_URL/users/create" | jq -r .id)
-    echoerr "created human admin account: u[$admin_username] p[password] id[$admin_id]"
+    local human_id=$(curl -s -H "Content-Type: application/json" -d "{\"email\":\"$admin_email\",\"username\":\"$admin_username\",\"password\":\"password\",\"team_id\":\"$humans\"}" "$MM_URL/users/create" | jq -r .id)
+    local bot_id=$(curl -s -H "Content-Type: application/json" -d "{\"email\":\"$admin_email\",\"username\":\"$admin_username\",\"password\":\"password\",\"team_id\":\"$bots\"}" "$MM_URL/users/create" | jq -r .id)
+
+    echoerr "created admin account: u[$admin_username] p[password] human_id[$human_id] bot_id[$human_id]"
 }
 
 main "admin" "admin@mm4s.com"

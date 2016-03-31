@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#
+# todo;; add some filtering from the command line
+#
+
+echo "killing all containers"
+docker ps | awk 'NR>1{print $1}' | xargs -I {} docker kill {}
+
+echo "rm all containers"
+docker ps -a | awk 'NR>1{print $1}' | xargs -I {} docker rm {}
+
+# echo "rmi all untagged images"
+# todo

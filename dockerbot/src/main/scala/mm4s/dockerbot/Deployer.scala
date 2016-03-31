@@ -18,7 +18,7 @@ object Deployer {
 
 class Deployer extends Actor with ActorLogging {
   def receive: Receive = {
-    case d @ DeployRequest(name, image, ports) =>
+    case d @ DeployRequest(name, image, ports, tags, env, data) =>
       val portmap = ports
                     .map(_.split(":"))
                     .filter(_.length == 2)
@@ -34,20 +34,21 @@ class Deployer extends Actor with ActorLogging {
 
       val hostcfg = new HostConfigBuilder().setPortBindings(bindings).createHostConfig()
 
+      val tagged = Seq("dockerbot") ++ tags.getOrElse(Seq.empty)
+      val envs = Seq(s"SERVICE_NAME=$name", s"SERVICE_TAGS=${tagged.mkString(",")}") ++ env.getOrElse(Seq.empty)
+
       val request = new DockerContainerRequestBuilder()
                     .setImage(image)
                     .setHostConfig(hostcfg)
                     .addExposedPort(portmap.map(_._2): _*)
-                    .setEnv(List(s"SERVICE_NAME=$name", s"SERVICE_TAGS=dockerbot"))
+                    .setEnv(envs)
                     .createDockerContainerRequest()
 
-      val obs: Observable[DockerContainerResponse] = client.createContainerObs(request, name)
-      obs.flatMap { r =>
-        val o: Observable[HttpStatus] = client.startContainerObs(r.getId)
-        o.map(x => DeployResult(r.getId, d))
-      }.subscribe(
-        r => s ! r,
-        e => s ! Status.Failure(e)
-      )
+      o(client.createContainerObs(request, name)).flatMap { r =>
+        o(client.startContainerObs(r.getId)).map(x => DeployResult(r.getId, d))
+      }.subscribe(r => s ! r, e => s ! Status.Failure(e))
   }
+
+  // force the conversion to scala
+  def o[T](javaObs: rx.Observable[T]): Observable[T] = javaObs
 }

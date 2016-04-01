@@ -53,7 +53,9 @@ object UserModels {
   case class UserCreated(id: String, username: String, email: String, team_id: String)
   case class LoginByUsername(username: String, password: String, name: String /*team name*/)
   case class LoginDetails(id: String, team_id: String, username: String, email: String)
+
   case class LoggedIn(token: String, details: LoginDetails)
+  case class LoggedInToChannel(token: String, channelId: String, details: LoginDetails)
 }
 
 object UserProtocols extends DefaultJsonProtocol with SprayJsonSupport {

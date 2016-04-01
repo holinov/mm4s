@@ -8,9 +8,9 @@ import akka.stream.scaladsl.Sink
 import com.rxthings.di._
 import com.typesafe.scalalogging.LazyLogging
 import mm4s.api.Streams._
-import mm4s.api.UserModels.LoginByUsername
-import mm4s.api.{Connection, Users}
-import mm4s.bots.api.{Configuration, Bot, ConfigKeys, Register}
+import mm4s.api.UserModels.{LoggedInToChannel, LoginByUsername}
+import mm4s.api.{Channels, Connection, Users}
+import mm4s.bots.api.{Bot, ConfigKeys, Configuration, Register}
 import net.ceedubs.ficus.Ficus._
 
 import scala.concurrent.Await
@@ -45,7 +45,13 @@ object Boot extends App with LazyLogging {
       Users.login(LoginByUsername(user, pass, team))
       .via(conn)
       .via(Users.extractSession())
-      .runWith(Sink.actorRef(Mattermost(channel, conn), Register(bot)))
+      .mapAsync(1) { s =>
+        Channels.list(s.token)
+        .via(conn).via(Channels.findany(channel))
+        .map(c => c.map(c => LoggedInToChannel(s.token, c.id, s.details)).getOrElse(s))
+        .runWith(Sink.head)
+      }
+      .runWith(Sink.actorRef(Mattermost(conn), Register(bot)))
     case _ =>
       logger.error("configuration failed h[{}],p[{}],u[{}],p[{}],t[{}],c[{}],", host, port.toString, user, pass, team, channel)
       system.terminate()

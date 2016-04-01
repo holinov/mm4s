@@ -5,28 +5,31 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import com.rxthings.di._
 import mm4s.api.MessageModels.CreatePost
-import mm4s.api.UserModels.LoggedIn
+import mm4s.api.UserModels.{LoggedInToChannel, LoggedIn}
 import mm4s.api.WebSocketModels.WebSocketMessage
 import mm4s.api._
 import mm4s.bots.api.ConfigKeys._
 import mm4s.bots.api._
 
 object Mattermost {
-  def apply(channel: String, flow: Connection)(implicit system: ActorSystem, mat: ActorMaterializer) = {
-    system.actorOf(Props(new Mattermost(channel, flow)))
+  def apply(flow: Connection)(implicit system: ActorSystem, mat: ActorMaterializer) = {
+    system.actorOf(Props(new Mattermost(flow)))
   }
 }
 
-class Mattermost(channel: String, flow: Connection)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
+class Mattermost(flow: Connection)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
   val mmhost: String = inject[String] annotated key.host
   val mmport: Int = inject[Int] annotated key.port
 
   def receive: Receive = {
     case l: LoggedIn =>
+      log.warning("channel was not selected, gateway not activated")
+
+    case l: LoggedInToChannel =>
       context.become(loggedin(l))
   }
 
-  def loggedin(l: LoggedIn): Receive = {
+  def loggedin(l: LoggedInToChannel): Receive = {
     WebSockets.connect(self, l.token, mmhost, mmport.toInt /* hack;; #8 */)
     log.debug(s"Bot ${l.details.username} Logged In, $l")
 
@@ -36,13 +39,13 @@ class Mattermost(channel: String, flow: Connection)(implicit mat: ActorMateriali
     }
   }
 
-  def registered(r: Register, l: LoggedIn): Receive = {
+  def registered(r: Register, l: LoggedInToChannel): Receive = {
     log.debug("[{}] has registered", l.details.username)
     r.bot ! Ready(self, BotID(l.details.username))
 
     {
       case Post(t) =>
-        Messages.create(CreatePost(t, channel), l.token).via(flow).runWith(Sink.ignore)
+        Messages.create(CreatePost(t, l.channelId), l.token).via(flow).runWith(Sink.ignore)
 
       case wsm: WebSocketMessage =>
         wsm.props.posted.foreach(p => r.bot ! Posted(p.message))

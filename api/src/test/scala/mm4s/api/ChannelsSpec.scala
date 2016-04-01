@@ -25,5 +25,35 @@ class ChannelsSpec extends TestKit(ActorSystem()) with AsyncWordSpecLike with Ma
         l.channels.map(_.displayName) should contain allOf("Town Square", "Off-Topic")
       }.runWith(Sink.head)
     }
+
+    "find using name" taggedAs integration in {
+      Channels.list(session.token).via(connection()).via(Channels.findany("town-square")).map { c =>
+        c shouldBe defined
+        c.get.name shouldBe "town-square"
+      }.runWith(Sink.head)
+    }
+
+    "find using display name" taggedAs integration in {
+      Channels.list(session.token).via(connection()).via(Channels.findany("Town Square")).map { c =>
+        c shouldBe defined
+        c.get.displayName shouldBe "Town Square"
+      }.runWith(Sink.head)
+    }
+
+    "find using id" taggedAs integration in {
+      val f = Channels.list(session.token)
+              .via(connection())
+              .via(response[ChannelListing])
+              .map(_.channels.head)
+              .map(c => c.id -> c.name)
+              .runWith(Sink.head)
+      val idname = Await.result(f, 10.seconds)
+
+      Channels.list(session.token).via(connection()).via(Channels.findany(idname._1)).map { c =>
+        c shouldBe defined
+        c.get.id shouldBe idname._1
+        c.get.name shouldBe idname._2
+      }.runWith(Sink.head)
+    }
   }
 }

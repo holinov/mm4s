@@ -1,5 +1,7 @@
 package mm4s.api
 
+import java.nio.file.Path
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.Marshal
@@ -12,6 +14,8 @@ import spray.json.{DefaultJsonProtocol, RootJsonFormat}
  * Message to be posted
  */
 case class Post(text: String)
+
+case class PostWithAttachment(text: String, path: Path)
 
 /**
  * Indicates a message was posted
@@ -34,11 +38,11 @@ object Messages {
 }
 
 object MessageModels {
-  case class CreatePost(message: String, channel_id: String)
+  case class CreatePost(message: String, channel_id: String, filenames: Seq[String] = Seq.empty)
 }
 
 object MessageProtocols extends DefaultJsonProtocol with SprayJsonSupport {
   import MessageModels._
 
-  implicit val CreatePostFormat: RootJsonFormat[CreatePost] = jsonFormat2(CreatePost)
+  implicit val CreatePostFormat: RootJsonFormat[CreatePost] = jsonFormat3(CreatePost)
 }

@@ -4,12 +4,15 @@ import akka.actor._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import com.rxthings.di._
+import mm4s.api.FileModels.{FilesUploaded, FileUpload}
 import mm4s.api.MessageModels.CreatePost
 import mm4s.api.UserModels.{LoggedInToChannel, LoggedIn}
 import mm4s.api.WebSocketModels.WebSocketMessage
 import mm4s.api._
 import mm4s.bots.api.ConfigKeys._
 import mm4s.bots.api._
+import FileProtocols._
+import Streams._
 
 object Mattermost {
   def apply(flow: Connection)(implicit system: ActorSystem, mat: ActorMaterializer) = {
@@ -46,6 +49,13 @@ class Mattermost(flow: Connection)(implicit mat: ActorMaterializer) extends Acto
     {
       case Post(t) =>
         Messages.create(CreatePost(t, l.channelId), l.token).via(flow).runWith(Sink.ignore)
+
+      case PostWithAttachment(t, p) =>
+        Filez.put(FileUpload(l.channelId, p.toFile), l.token)
+        .via(flow)
+        .via(response[FilesUploaded])
+        .mapAsync(1)(f => Messages.create(CreatePost(t, l.channelId, f.filenames), l.token).via(flow).runWith(Sink.head))
+        .runWith(Sink.ignore)
 
       case wsm: WebSocketMessage =>
         wsm.props.posted.foreach(p => r.bot ! Posted(p.message))

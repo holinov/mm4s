@@ -4,13 +4,13 @@ Mattermost for Scala (mm4s)
 [![Dependencies](https://app.updateimpact.com/badge/701268856357916672/mm4s.svg?config=compile)](https://app.updateimpact.com/latest/701268856357916672/mm4s)
 
 ### API
-Composable interface to the Mattermost REST API using Akka Streams
+Composable interface to the Mattermost REST API using Akka Streams.
 
 ### Bots
-API for developing Bots with Akka.  Provides a Gateway to Mattermost
+API for developing Bots with Akka.  Provides a Gateway API to Mattermost.
 
 ##### Configuration
-Bots can be configured externally from the docker deployment by setting the following environment variables
+Bots can be configured externally from the docker deployment by setting the following environment variables.
 
 * `MM_HOST` - Mattermost server host name
 * `MM_PORT` - Mattermost server port number
@@ -37,8 +37,6 @@ See the Akka Injects readme for details on use.
 
 ##### Artifacts
 
-*Not yet published, 0.1 will be first release, WIP until then*
-
 Add the bintray resolver to you sbt project
 
 ```resolvers += "jw3 at bintray" at "https://dl.bintray.com/jw3/maven"```
@@ -46,7 +44,9 @@ Add the bintray resolver to you sbt project
 The following artifacts can be specified
 
 ```"com.github.jw3" %% "mm4s-api" % "0.1"```
+
 ```"com.github.jw3" %% "mm4s-bots" % "0.1"```
+
 ```"com.github.jw3" %% "mm4s-dockerbots" % "0.1"```
 
 ### Bugs and Feedback

@@ -14,13 +14,13 @@ import mm4s.bots.api._
 import FileProtocols._
 import Streams._
 
-object Mattermost {
+object Gateway {
   def apply(flow: Connection)(implicit system: ActorSystem, mat: ActorMaterializer) = {
-    system.actorOf(Props(new Mattermost(flow)))
+    system.actorOf(Props(new Gateway(flow)))
   }
 }
 
-class Mattermost(flow: Connection)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
+class Gateway(flow: Connection)(implicit mat: ActorMaterializer) extends Actor with ActorLogging {
   val mmhost: String = inject[String] annotated key.host
   val mmport: Int = inject[Int] annotated key.port
 

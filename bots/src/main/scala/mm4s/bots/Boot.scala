@@ -51,7 +51,7 @@ object Boot extends App with LazyLogging {
         .map(c => c.map(c => LoggedInToChannel(s.token, c.id, s.details)).getOrElse(s))
         .runWith(Sink.head)
       }
-      .runWith(Sink.actorRef(Mattermost(conn), Register(bot)))
+      .runWith(Sink.actorRef(Gateway(conn), Register(bot)))
     case _ =>
       logger.error("configuration failed h[{}],p[{}],u[{}],p[{}],t[{}],c[{}],", host, port.toString, user, pass, team, channel)
       system.terminate()

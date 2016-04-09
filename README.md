@@ -3,71 +3,57 @@ Mattermost for Scala (mm4s)
 [![Build Status](https://travis-ci.org/jw3/mm4s.svg?branch=master)](https://travis-ci.org/jw3/mm4s)
 [![Dependencies](https://app.updateimpact.com/badge/701268856357916672/mm4s.svg?config=compile)](https://app.updateimpact.com/latest/701268856357916672/mm4s)
 
-Mattermost API implemented using Akka HTTP and Streams
+### API
+Composable interface to the Mattermost REST API using Akka Streams
 
-**[WIP] Rapidly changing API until the 0.1 release**
+### Bots
+API for developing Bots with Akka.  Provides a Gateway to Mattermost
 
-#### API Bot
+##### Configuration
+Bots can be configured externally from the docker deployment by setting the following environment variables
 
-The library provides an Actor implementation which can handle the majority of MM interaction.
+* `MM_HOST` - Mattermost server host name
+* `MM_PORT` - Mattermost server port number
+* `BOT_USER` - Bot Username - The username for the Bot, which will be used to create a Bot if not already existing
+* `BOT_PASS` - Bot Password - The password for the Bot account.  Be warned that security is pretty low speed right now.
+* `BOT_TEAM` - Bot Team - The team to connect to, only one supported per Bot.
+* `BOT_CHANNEL` - Channel ID - The channel the Bot lives in (for now only one) and messages to.
 
-You can integrate this API Bot into your Actor hierarchy and use it as a gateway for other Actors.
- 
-#### Docker Bots
+*Note:* At this time a single bot can be dynamically placed on a single team and channel only. #23
 
-In addition to providing an API for interaction with MM this library also provides a convenient means of deploying Bots as Microservices.
+### Dockerbots
+Minimal REST API for Docker tailored for deploying containerized bots deployed as a Docker container.
 
-Bot Containers should be provided the following
+### Initializer
+Containerized init scripts for a MM development instance.
 
-* MM_HOST - Mattermost Hostname - The name or ip of the MM server.
-* BOT_USER - Bot Username - A username for the Bot, which will be used to create a Bot if not already existing
-* BOT_PASS - Bot Password - The password for the Bot account.  Be warned that security is pretty low speed right now.
-* BOT_TEAM - Bot Team - The team to connect to, only one supported per Bot.
-* BOT_CHANNEL - Channel ID - The channel the Bot lives in (for now only one) and messages to.
+### Development
 
-To build the Docker Bot image from the root project do a
+##### Dependency Injection
 
-`sbt dockerbot/docker:publishLocal`
-
-and then
-
-`docker run jwiii/mm4s-dockerbot:0.1-SNAPSHOT`
-
-#### Dependency Injection
-
-Dependency injection is provided through [Akka Injects](https://github.com/jw3/akka-injects) and is available within any Dockerbot.
+Dependency injection is provided through [Akka Injects](https://github.com/jw3/akka-injects) and is available within any bot.
 
 See the Akka Injects readme for details on use.
 
-#### HTTP Bots
+##### Artifacts
 
-*TODO*
+*Not yet published, 0.1 will be first release, WIP until then*
 
-The Bot Gateway also supports a HTTP interface that can be used to receive callbacks from MM.
-
-Slash Commands and Outgoing Webhooks can target this interface which will route messages to the underlying actors.
-
-#### Installation
-
-Create a Slash Command that points to the mm4s server
-
-#### Artifacts
-
-*Not yet published, 0.1 will be first release*
-
-Add the bintray resolver
+Add the bintray resolver to you sbt project
 
 ```resolvers += "jw3 at bintray" at "https://dl.bintray.com/jw3/maven"```
 
-Add the mm4s dependency
+The following artifacts can be specified
 
-```"com.github.jw3" %% "mm4s" % "0.1"```
+```"com.github.jw3" %% "mm4s-api" % "0.1"```
+```"com.github.jw3" %% "mm4s-bots" % "0.1"```
+```"com.github.jw3" %% "mm4s-dockerbots" % "0.1"```
 
-## Bugs and Feedback
+### Bugs and Feedback
 
 For bugs, questions and discussions please use the [Github Issues](https://github.com/jw3/mm4s/issues).
 
-## License
+### License
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

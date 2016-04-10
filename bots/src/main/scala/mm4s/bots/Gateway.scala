@@ -33,7 +33,7 @@ class Gateway(flow: Connection)(implicit mat: ActorMaterializer) extends Actor w
   }
 
   def loggedin(l: LoggedInToChannel): Receive = {
-    WebSockets.connect(self, l.token, mmhost, mmport.toInt /* hack;; #8 */)
+    WebSockets.connect(self, l.token, mmhost, mmport)
     log.debug(s"Bot ${l.details.username} Logged In, $l")
 
     {

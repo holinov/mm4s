@@ -16,8 +16,8 @@ services:
 
 before_install:
   - sudo apt-get install -y --no-install-recommends curl jq
-  - docker pull mattermost/platform:2.0
-  - docker run -d -p 8080:80 mattermost/platform:2.0
+  - docker pull mattermost/platform:2.2
+  - docker run -d -p 8080:80 mattermost/platform:2.2
   - docker ps -a
 
 before_script:

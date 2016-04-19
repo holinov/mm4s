@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling._
-import akka.http.scaladsl.model.headers.{Cookie, `Set-Cookie`}
+import akka.http.scaladsl.model.headers.`Set-Cookie`
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, MessageEntity}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
@@ -29,7 +29,7 @@ object Users {
   }
 
   def list(team: String, token: String)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
-    get("/users/profiles").map(r => r.withHeaders(Cookie("MMTOKEN", token)))
+    get("/users/profiles").map(withAuth(token))
   }
 
   def login(byUsername: LoginByUsername)(implicit system: ActorSystem) = {

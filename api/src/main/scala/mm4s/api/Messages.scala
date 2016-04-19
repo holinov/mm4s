@@ -6,7 +6,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.Cookie
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 
@@ -32,7 +31,7 @@ object Messages {
 
   def create(post: CreatePost, token: String)(implicit system: ActorSystem) = {
     request(s"/channels/${post.channel_id}/create") { r =>
-      Marshal(post).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withHeaders(Cookie("MMTOKEN", token)).withEntity)
+      Marshal(post).to[MessageEntity].map(r.withMethod(HttpMethods.POST).withHeaders(auth(token)).withEntity)
     }
   }
 }

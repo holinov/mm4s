@@ -41,7 +41,7 @@ class TeamsSpec extends TestKit(ActorSystem("TeamsSpec"))
         Teams.list("token")
         .runWith(TestSink.probe[HttpRequest])
         .request(1)
-        .expectNext(HttpRequest(uri = path, method = GET, headers = List(Cookie("MMTOKEN", "token"))))
+        .expectNext(HttpRequest(uri = path, method = GET, headers = List(auth("token"))))
         .expectComplete()
       }
     }

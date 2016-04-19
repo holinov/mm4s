@@ -6,7 +6,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.Cookie
 import akka.stream.scaladsl.{FileIO, Source}
 import mm4s.api.Streams._
 import spray.json._
@@ -20,7 +19,7 @@ object Filez {
 
   def get(path: FilePath, token: String)(implicit system: ActorSystem) = {
     request(s"/files/get/${fileurl(path)}") { r =>
-      Marshal(path).to[MessageEntity].map(r.withHeaders(Cookie("MMTOKEN", token)).withEntity)
+      Marshal(path).to[MessageEntity].map(r.withHeaders(auth(token)).withEntity)
     }
   }
 
@@ -39,13 +38,13 @@ object Filez {
     )
 
     request(s"/files/upload") { r =>
-      Marshal(formData).to[RequestEntity].map(r.withHeaders(Cookie("MMTOKEN", token)).withMethod(HttpMethods.POST).withEntity)
+      Marshal(formData).to[RequestEntity].map(r.withHeaders(auth(token)).withMethod(HttpMethods.POST).withEntity)
     }
   }
 
   def info(path: FilePath, token: String)(implicit system: ActorSystem) = {
     request(s"/files/get_info/${fileurl(path)}") { r =>
-      Marshal(path).to[MessageEntity].map(r.withHeaders(Cookie("MMTOKEN", token)).withEntity)
+      Marshal(path).to[MessageEntity].map(r.withHeaders(auth(token)).withEntity)
     }
   }
 

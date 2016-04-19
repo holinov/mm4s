@@ -5,7 +5,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.Cookie
 import akka.stream.scaladsl.Source
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
@@ -25,12 +24,12 @@ object Teams {
 
   def find(name: String, token: String)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
     get("/teams/find_team_by_name").map(r =>
-      r.withMethod(HttpMethods.POST).withHeaders(Cookie("MMTOKEN", token)).withEntity(s"""{"name":"$name"}""")
+      r.withMethod(HttpMethods.POST).withHeaders(auth(token)).withEntity(s"""{"name":"$name"}""")
     )
   }
 
   def list(token: String)(implicit system: ActorSystem): Source[HttpRequest, NotUsed] = {
-    get("/teams/all").map(r => r.withHeaders(Cookie("MMTOKEN", token)))
+    get("/teams/all").map(withAuth(token))
   }
 }
 

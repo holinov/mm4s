@@ -15,7 +15,7 @@ registrator:
     - "/var/run/docker.sock:/tmp/docker.sock"
 
 mattermost:
-  image: mattermost/platform:2.0
+  image: mattermost/platform:2.2
   dns:
     - "172.17.0.1"
   dns_search:

@@ -4,14 +4,14 @@ lazy val commonSettings = Seq(
   version := "0.3-SNAPSHOT",
   licenses +=("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
 
-  scalaVersion := "2.11.7",
+  scalaVersion := "2.11.8",
   scalacOptions += "-target:jvm-1.8",
 
   resolvers += "jw3 at bintray" at "https://dl.bintray.com/jw3/maven",
   com.updateimpact.Plugin.apiKey in ThisBuild := sys.env.getOrElse("UPDATEIMPACT_API_KEY", (com.updateimpact.Plugin.apiKey in ThisBuild).value),
 
   libraryDependencies ++= {
-    val akkaVersion = "2.4.2"
+    val akkaVersion = "2.4.4"
     val scalaTest = "3.0.0-M15"
 
     Seq(

@@ -5,11 +5,13 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
+import akka.util.Timeout
 import mm4s.api.UserModels.{LoggedIn, LoginByUsername}
 import mm4s.api.{Streams, Users}
 import org.scalatest.Tag
 
 import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
 
 
 trait IntegrationTest {
@@ -17,6 +19,9 @@ trait IntegrationTest {
   def user: String = "admin"
   def pass: String = "password"
   def team: String = "humans"
+
+  val defaultDuration = 10.seconds
+  val defaultTimeout = Timeout(defaultDuration)
 
   def token()(implicit system: ActorSystem, mat: ActorMaterializer): Future[LoggedIn] = {
     Users.login(LoginByUsername(user, pass, team))

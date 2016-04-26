@@ -11,6 +11,7 @@ import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
 import mm4s.dockerbot.DeploymentModels._
 import mm4s.dockerbot.DeploymentProtocols._
+import net.ceedubs.ficus.Ficus._
 
 import scala.concurrent.duration.DurationInt
 
@@ -40,5 +41,9 @@ class HttpInterface(deployer: ActorRef)(implicit val actorSystem: ActorSystem, v
         }
       }
 
-  Http().bindAndHandle(routes, "localhost", 9999)
+  val cfg = Configuration.build()
+  val host = cfg.as[String](Configuration.key.host)
+  val port = cfg.as[Int](Configuration.key.port)
+  logger.debug("binding to [{}:{}]", host, port.toString)
+  Http().bindAndHandle(routes, host, 9999)
 }

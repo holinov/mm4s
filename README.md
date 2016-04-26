@@ -24,6 +24,10 @@ Bots can be configured externally from the docker deployment by setting the foll
 ### Dockerbots
 Minimal REST API for Docker tailored for deploying containerized bots deployed as a Docker container.
 
+Note that rx-docker uses the following environment variables
+* `DOCKER_HOST`: which should use the `http://` scheme not `tcp://`
+* `DOCKER_CERT_PATH`: which may need added as a volume and env var
+
 ### Initializer
 Containerized init scripts for a MM development instance.
 

@@ -45,5 +45,5 @@ class HttpInterface(deployer: ActorRef)(implicit val actorSystem: ActorSystem, v
   val host = cfg.as[String](Configuration.key.host)
   val port = cfg.as[Int](Configuration.key.port)
   logger.debug("binding to [{}:{}]", host, port.toString)
-  Http().bindAndHandle(routes, host, 9999)
+  Http().bindAndHandle(routes, host, port)
 }

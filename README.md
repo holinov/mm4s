@@ -47,11 +47,11 @@ Add the bintray resolver to you sbt project
 
 The following artifacts can be specified
 
-```"com.github.jw3" %% "mm4s-api" % "0.1"```
+```"com.github.jw3" %% "mm4s-api" % "0.2.1"```
 
-```"com.github.jw3" %% "mm4s-bots" % "0.1"```
+```"com.github.jw3" %% "mm4s-bots" % "0.2.1"```
 
-```"com.github.jw3" %% "mm4s-dockerbots" % "0.1"```
+```"com.github.jw3" %% "mm4s-dockerbots" % "0.2.1"```
 
 ### Bugs and Feedback
 

@@ -16,6 +16,8 @@ import spray.json.{DefaultJsonProtocol, RootJsonFormat}
  */
 case class Post(text: String)
 
+case class PostWithChannel(text: String, channelId: String)
+
 case class PostWithAttachment(text: String, path: Path)
 
 /**

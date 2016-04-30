@@ -17,6 +17,11 @@ object Channels {
     get("/channels/").map(withAuth(token))
   }
 
+  // prototyping usage of authenticated connection #33
+  def __list(implicit system: ActorSystem, mat: ActorMaterializer): Source[HttpRequest, NotUsed] = {
+    get("/channels/")
+  }
+
   def findany(channel: String)(implicit system: ActorSystem, mat: ActorMaterializer) = {
     Flow[HttpResponse]
     .via(response[ChannelListing])

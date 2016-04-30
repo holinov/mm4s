@@ -54,8 +54,12 @@ object UserModels {
   case class LoginByUsername(username: String, password: String, name: String /*team name*/)
   case class LoginDetails(id: String, team_id: String, username: String, email: String)
 
-  case class LoggedIn(token: String, details: LoginDetails)
-  case class LoggedInToChannel(token: String, channelId: String, details: LoginDetails)
+  trait Session {
+    def details: LoginDetails
+    def token: String
+  }
+  case class LoggedIn(token: String, details: LoginDetails) extends Session
+  case class LoggedInToChannel(token: String, channelId: String, details: LoginDetails) extends Session
 }
 
 object UserProtocols extends DefaultJsonProtocol with SprayJsonSupport {

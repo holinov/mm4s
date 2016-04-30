@@ -1,18 +1,16 @@
 package mm4s.bots
 
 import akka.actor._
+import akka.http.scaladsl.model.HttpRequest
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Sink
+import akka.stream.scaladsl.{Flow, Sink}
 import com.rxthings.di._
-import mm4s.api.FileModels.{FilesUploaded, FileUpload}
 import mm4s.api.MessageModels.CreatePost
-import mm4s.api.UserModels.{LoggedInToChannel, LoggedIn}
+import mm4s.api.UserModels.{LoggedIn, LoggedInToChannel, Session}
 import mm4s.api.WebSocketModels.WebSocketMessage
 import mm4s.api._
 import mm4s.bots.api.ConfigKeys._
 import mm4s.bots.api._
-import FileProtocols._
-import Streams._
 
 object Gateway {
   def apply(flow: Connection)(implicit system: ActorSystem, mat: ActorMaterializer) = {
@@ -26,39 +24,42 @@ class Gateway(flow: Connection)(implicit mat: ActorMaterializer) extends Actor w
 
   def receive: Receive = {
     case l: LoggedIn =>
-      log.warning("channel was not selected, gateway not activated")
+      log.warning("default channel was not found, must be specified on all messages")
+      context.become(loggedIn(l, None))
 
     case l: LoggedInToChannel =>
-      context.become(loggedin(l))
+      context.become(loggedIn(l, Option(l.channelId)))
   }
 
-  def loggedin(l: LoggedInToChannel): Receive = {
-    WebSockets.connect(self, l.token, mmhost, mmport)
-    log.debug(s"Bot ${l.details.username} Logged In, $l")
+  def loggedIn(s: Session, defChannel: Option[String]): Receive = {
+    WebSockets.connect(self, s.token, mmhost, mmport)
+    log.debug("Bot {} Logged In [{}]", s.details.username, s)
 
     {
       case r: Register =>
-        context.become(registered(r, l))
+        context.become(registered(r.bot, s, defChannel))
     }
   }
 
-  def registered(r: Register, l: LoggedInToChannel): Receive = {
-    log.debug("[{}] has registered", l.details.username)
-    r.bot ! Ready(self, BotID(l.details.username))
+  def registered(bot: ActorRef, session: Session, defChannel: Option[String]): Receive = {
+    log.debug("[{}] has registered", session.details.username)
+    bot ! Ready(self, BotID(session.details.username))
 
     {
-      case Post(t) =>
-        Messages.create(CreatePost(t, l.channelId), l.token).via(flow).runWith(Sink.ignore)
+      case Post(t) => defChannel.foreach { c =>
+        Messages.create(CreatePost(t, c), session.token).via(flow).runWith(Sink.ignore)
+      }
 
-      case PostWithAttachment(t, p) =>
-        Filez.put(FileUpload(l.channelId, p.toFile), l.token)
-        .via(flow)
-        .via(response[FilesUploaded])
-        .mapAsync(1)(f => Messages.create(CreatePost(t, l.channelId, f.filenames), l.token).via(flow).runWith(Sink.head))
-        .runWith(Sink.ignore)
+      case PostWithChannel(t, c) =>
+        Messages.create(CreatePost(t, c), session.token).via(flow).runWith(Sink.ignore)
 
       case wsm: WebSocketMessage =>
-        wsm.props.posted.foreach(p => r.bot ! Posted(p.message))
+        wsm.props.posted.foreach(p => bot ! Posted(p.message))
+
+      // prototyping usage of authenticated connection #33
+      case ConnectionRequest() =>
+        val conn: Connection = Flow[HttpRequest].map(withAuth(session.token)).via(flow)
+        sender ! conn
     }
   }
 }
